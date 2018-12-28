@@ -72,7 +72,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	}
 
 
-	/**
+	/** 提取Advisor
 	 * Look for AspectJ-annotated aspect beans in the current bean factory,
 	 * and return to a list of Spring AOP Advisors representing them.
 	 * <p>Creates a Spring Advisor for each AspectJ advice method.
@@ -87,26 +87,26 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 			if (aspectNames == null) {
 				List<Advisor> advisors = new LinkedList<Advisor>();
 				aspectNames = new LinkedList<String>();
-				String[] beanNames =
+				String[] beanNames = // 获取所有的beanName
 						BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Object.class, true, false);
-				for (String beanName : beanNames) {
-					if (!isEligibleBean(beanName)) {
+				for (String beanName : beanNames) {// 循环所有的beanName找出对应的增强方法
+					if (!isEligibleBean(beanName)) {// 不合法的bean则略过， 由子类定义规则， 默认返回true
 						continue;
 					}
 					// We must be careful not to instantiate beans eagerly as in this
 					// case they would be cached by the Spring container but would not
-					// have been weaved
+					// have been weaved.获取对应的bean的类型
 					Class beanType = this.beanFactory.getType(beanName);
 					if (beanType == null) {
 						continue;
 					}
-					if (this.advisorFactory.isAspect(beanType)) {
+					if (this.advisorFactory.isAspect(beanType)) {// 如果存在Aspect注解
 						aspectNames.add(beanName);
 						AspectMetadata amd = new AspectMetadata(beanType, beanName);
 						if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
 							MetadataAwareAspectInstanceFactory factory =
 									new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
-							List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
+							List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);// 解析标记AspectJ注解中的增强方法
 							if (this.beanFactory.isSingleton(beanName)) {
 								this.advisorsCache.put(beanName, classAdvisors);
 							}
@@ -136,7 +136,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 		if (aspectNames.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		List<Advisor> advisors = new LinkedList<Advisor>();
+		List<Advisor> advisors = new LinkedList<Advisor>();// 记录在缓存中
 		for (String aspectName : aspectNames) {
 			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
 			if (cachedAdvisors != null) {

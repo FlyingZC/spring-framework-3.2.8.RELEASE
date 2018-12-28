@@ -124,10 +124,10 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			closeBeanFactory();
 		}
 		try {
-			DefaultListableBeanFactory beanFactory = createBeanFactory();//创建DefaultListableBeanFactory
-			beanFactory.setSerializationId(getId());// 为了序列化指定id， 如果需要的话,让这个BeanFactory从id反序列化到BeanFactory对象
-			customizeBeanFactory(beanFactory);// 定制beanFactory,设置相关属性,包括是否允许覆盖同名称的不同定义的对象以及循环依赖以及设置 @Autowired 和 @Qualifier 注解解析器 QualifierAnnotationAutowire
-			loadBeanDefinitions(beanFactory);// 初始化DodumentReader,并进行XML文件读取及解析
+			DefaultListableBeanFactory beanFactory = createBeanFactory();// 创建DefaultListableBeanFactory
+			beanFactory.setSerializationId(getId());// 为了序列化指定id,如果需要的话,让这个BeanFactory从id反序列化到BeanFactory对象
+			customizeBeanFactory(beanFactory);// 定制beanFactory,设置相关属性.包括是否允许覆盖同名称的不同定义的对象 以及循环依赖 以及设置 @Autowired 和 @Qualifier 注解解析器 QualifierAnnotationAutowire
+			loadBeanDefinitions(beanFactory);// 初始化DodumentReader,并进行XML文件读取及解析. 经过该步骤后,beanFactory中已经包含了所有解析好的配置
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;
 			}
@@ -215,7 +215,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 		if (this.allowCircularReferences != null) {// 如果属性allowCircularReferences不为空,设置给beanFactory对象相应属性
 			beanFactory.setAllowCircularReferences(this.allowCircularReferences);// 此属性的含义:是否允许bean之间存在循环依赖
 		}
-		beanFactory.setAutowireCandidateResolver(new QualifierAnnotationAutowireCandidateResolver());// 用于@Qualifier和@Autowired
+		beanFactory.setAutowireCandidateResolver(new QualifierAnnotationAutowireCandidateResolver());// 用于@Qualifier和@Autowired.设置该解析器后spring可以支持注解方式的注入
 	}
 
 	/**

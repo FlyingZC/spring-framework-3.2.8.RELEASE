@@ -66,9 +66,9 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 	@Override
 	protected Object[] getAdvicesAndAdvisorsForBean(Class beanClass, String beanName, TargetSource targetSource) {
-		List advisors = findEligibleAdvisors(beanClass, beanName);
+		List advisors = findEligibleAdvisors(beanClass, beanName);// 获取所有的增强以及寻找所有增强中适用于bean的增强并应用
 		if (advisors.isEmpty()) {
-			return DO_NOT_PROXY;
+			return DO_NOT_PROXY;// 如果无法找到对应的增强器便返回 DO_NOT_PROXY
 		}
 		return advisors.toArray();
 	}
@@ -84,8 +84,8 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @see #extendAdvisors
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class beanClass, String beanName) {
-		List<Advisor> candidateAdvisors = findCandidateAdvisors();
-		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
+		List<Advisor> candidateAdvisors = findCandidateAdvisors();// 解析所有增强器
+		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);// 挑选出符合配置的通配符的增强器
 		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
 			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
@@ -101,7 +101,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		return this.advisorRetrievalHelper.findAdvisorBeans();
 	}
 
-	/**
+	/** 挑取出适合的增强器， 也就是满足我们配置的通配符的增强器
 	 * Search the given candidate Advisors to find all Advisors that
 	 * can apply to the specified bean.
 	 * @param candidateAdvisors the candidate Advisors
@@ -114,7 +114,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 			List<Advisor> candidateAdvisors, Class beanClass, String beanName) {
 
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
-		try {
+		try {// 过滤已经得到的advisors
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		}
 		finally {

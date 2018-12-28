@@ -457,10 +457,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Allows post-processing of the bean factory in context subclasses.子类覆盖方法做额外的处理
 				postProcessBeanFactory(beanFactory);
 
-				// Invoke factory processors registered as beans in the context.激活各种BeanFactory处理器
+				// Invoke factory processors registered as beans in the context.激活各种BeanFactory的后置处理器
 				invokeBeanFactoryPostProcessors(beanFactory);
 
-				// Register bean processors that intercept bean creation.注册拦截Bean创建的Bean处理器,这里只是注册， 真正的调用是在getBean时候
+				// Register bean processors that intercept bean creation.注册拦截Bean创建的Bean处理器.这里只是注册,真正的调用是在getBean时候
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.为上下文初始化Message源， 即不同语言的消息体 ， 国际化处理
@@ -534,7 +534,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
-		refreshBeanFactory();
+		refreshBeanFactory();// 初始化BeanFactory,并进行xml文件读取.并将得到的BeanFactory记录在当前实体的属性中
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();// 返回当前实体的beanFactory属性
 		if (logger.isDebugEnabled()) {
 			logger.debug("Bean factory for " + getDisplayName() + ": " + beanFactory);
@@ -550,8 +550,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
 		beanFactory.setBeanClassLoader(getClassLoader());// 设置beanFactory的classLoader为当前context的classLoader
-		beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver());// 设置beanFactory的表达式语言处理器， Spring3增加了表达式语言的支持，默认可以使用#{bean.xxx}的形式来调用相关属性值。
-		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));// 为beanFactory增加了一个默认的propertyEditor， 这个主要是对bean的属性等设置管理的一个工具
+		beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver());// 设置beanFactory的表达式语言处理器,Spring3增加了表达式语言的支持,默认可以使用#{bean.xxx}的形式来调用相关属性值
+		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));// 为beanFactory增加了一个默认的propertyEditor,这个主要是对bean的属性等设置管理的一个工具
 
 		// Configure the bean factory with context callbacks.添加BeanPostProcessor
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
@@ -563,7 +563,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// BeanFactory interface not registered as resolvable type in a plain factory.
 		// MessageSource registered (and found for autowiring) as a bean. 设置了几个自动装配的特殊规则
-		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
+		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);// 当bean的属性注入的时候,一旦检测到属性为BeanFactory类型便会将beanFactory的实例注入进去
 		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
@@ -701,11 +701,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * <p>Must be called before any instantiation of application beans.
 	 */
 	protected void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);
+		String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, true, false);// 获取BeanPostProcessor类型的beanNames
 
-		// Register BeanPostProcessorChecker that logs an info message when BeanPostProcessorChecker是一个普通的信息打印， 可能会有些情况
-		// a bean is created during BeanPostProcessor instantiation, i.e. when 当Spring的配置中的后处理器还没有被注册就已经开始了bean的初始化时
-		// a bean is not eligible for getting processed by all BeanPostProcessors.便会打印出BeanPostProcessorChecker中设定的信息
+		// Register BeanPostProcessorChecker that logs an info message when.// BeanPostProcessorChecker是一个普通的信息打印,可能会有些情况
+		// a bean is created during BeanPostProcessor instantiation, i.e. when // 当Spring的配置中的后处理器还没有被注册就已经开始了bean的初始化时
+		// a bean is not eligible for getting processed by all BeanPostProcessors.// 便会打印出BeanPostProcessorChecker中设定的信息
 		int beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + 1 + postProcessorNames.length;
 		beanFactory.addBeanPostProcessor(new BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));
 
@@ -715,7 +715,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		List<BeanPostProcessor> internalPostProcessors = new ArrayList<BeanPostProcessor>();
 		List<String> orderedPostProcessorNames = new ArrayList<String>();// 使用Ordered保证顺序
 		List<String> nonOrderedPostProcessorNames = new ArrayList<String>();// 无序BeanPostProcessor
-		for (String ppName : postProcessorNames) {
+		for (String ppName : postProcessorNames) {// 遍历beanNames
 			if (isTypeMatch(ppName, PriorityOrdered.class)) {
 				BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);
 				priorityOrderedPostProcessors.add(pp);
@@ -758,7 +758,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 		registerBeanPostProcessors(beanFactory, nonOrderedPostProcessors);
 
-		// Finally, re-register all internal BeanPostProcessors.第四步， 注册所有MergedBeanDefinitionPostProcessor类型的BeanPostProcessor， 并非重复注册.在beanFactory.addBeanPostProcessor中会先移除已经存在的BeanPostProcessor
+		// Finally, re-register all internal BeanPostProcessors.第四步,注册所有MergedBeanDefinitionPostProcessor类型的BeanPostProcessor,并非重复注册.在beanFactory.addBeanPostProcessor中会先移除已经存在的BeanPostProcessor
 		OrderComparator.sort(internalPostProcessors);
 		registerBeanPostProcessors(beanFactory, internalPostProcessors);
 

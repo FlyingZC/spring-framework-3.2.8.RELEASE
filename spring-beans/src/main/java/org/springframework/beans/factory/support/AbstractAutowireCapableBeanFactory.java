@@ -515,9 +515,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Initialize the bean instance.始依赖bean
 		Object exposedObject = bean;
-		try {// 对bean进行填充，将各个属性值注入，其中，可能存在依赖于其他bean的属性，则会递归初始化
+		try {// 对bean进行填充.将各个属性值注入.其中可能存在依赖于其他bean的属性,则会递归初始化
 			populateBean(beanName, mbd, instanceWrapper);
-			if (exposedObject != null) {// 调用初始化方法，比如init-method
+			if (exposedObject != null) {// 调用初始化方法,比如init-method
 				exposedObject = initializeBean(beanName, exposedObject, mbd);
 			}
 		}
@@ -889,9 +889,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {// 如果尚未被解析
 			// Make sure bean class is actually resolved at this point.
 			if (mbd.hasBeanClass() && !mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
-				bean = applyBeanPostProcessorsBeforeInstantiation(mbd.getBeanClass(), beanName);
+				bean = applyBeanPostProcessorsBeforeInstantiation(mbd.getBeanClass(), beanName);// 调用beforeInstantiation()方法
 				if (bean != null) {
-					bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
+					bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);// 调用afterInitialization()方法
 				}
 			}
 			mbd.beforeInstantiationResolved = (bean != null);
@@ -1394,7 +1394,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 			original = mpvs.getPropertyValueList();
 		}
-		else {// 如果pvs并不是使用MutablePropertyValues封装的类型，那么直接使用原始的属性获取方法
+		else {// 如果pvs并不是使用MutablePropertyValues封装的类型,那么直接使用原始的属性获取方法
 			original = Arrays.asList(pvs.getPropertyValues());
 		}
 
@@ -1407,7 +1407,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Create a deep copy, resolving any references for values.
 		List<PropertyValue> deepCopy = new ArrayList<PropertyValue>(original.size());
 		boolean resolveNecessary = false;
-		for (PropertyValue pv : original) {// 遍历属性， 将属性转换为对应类的对应属性的类型
+		for (PropertyValue pv : original) {// 遍历属性,将属性转换为对应类的对应属性的类型
 			if (pv.isConverted()) {
 				deepCopy.add(pv);
 			}

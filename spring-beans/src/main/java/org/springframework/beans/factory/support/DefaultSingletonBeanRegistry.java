@@ -167,7 +167,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		return getSingleton(beanName, true);// 参数true设置标识允许早期依赖
 	}
 
-	/**
+	/** 尝试从singletonObjects中取 -> earlySingletonObjects中取 -> 通过singletonFactories获取singletonFactory取,并存入earlySingletonObjects
 	 * Return the (raw) singleton object registered under the given name.
 	 * <p>Checks already instantiated singletons and also allows for an early
 	 * reference to a currently created singleton (resolving a circular reference).
@@ -177,14 +177,14 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
 		Object singletonObject = this.singletonObjects.get(beanName);// 检查缓存中是否存在实例, singletonObjects：用于保存BeanName和创建bean实例之间的关系, bean name --> bean instance
-		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {// 如果为空， 则锁定全局变量并进行处理
+		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {// 如果为空,则锁定全局变量并进行处理
 			synchronized (this.singletonObjects) {// 如果此bean正在加载则不处理
 				singletonObject = this.earlySingletonObjects.get(beanName);
 				if (singletonObject == null && allowEarlyReference) {// 当某些方法需要提前初始化的时候则会调用 addSingletonFactory 方法将对应的ObjectFactory初始化策略存储在singletonFactories(beanName);
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);// 再尝试从singletonFactories里面获取beanName对应的ObjectFactory，然后调用这个ObjectFactory的getObject来创建bean，并放到earlySingleton Objects里面去,并且从singletonFacotories里面remove掉这个ObjectFactory // singletonFactories：用于保存BeanName和创建 bean的工厂之间的关系，bean name -->ObjectFactory
 					if (singletonFactory != null) {// 调用预先设定的getObject方法
 						singletonObject = singletonFactory.getObject();// 初始化bean
-						this.earlySingletonObjects.put(beanName, singletonObject);// 记录在缓存中， earlySingletonObjects和singletonFactories互斥
+						this.earlySingletonObjects.put(beanName, singletonObject);// 记录在缓存中,earlySingletonObjects和singletonFactories互斥
 						this.singletonFactories.remove(beanName);// 并且从singletonFactories中移除掉这个ObjectFactory
 					}
 				}
@@ -206,7 +206,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		synchronized (this.singletonObjects) {// 全局变量需要同步
 			Object singletonObject = this.singletonObjects.get(beanName);// 从缓存中取.首先检查对应的bean是否已经加载过，因为singleton模式其实就是复用以创建的bean，所以这一步是必须的
 			if (singletonObject == null) {// 如果为空才可以进行singleto的bean的初始化
-				if (this.singletonsCurrentlyInDestruction) {
+				if (this.singletonsCurrentlyInDestruction) {// 正在销毁
 					throw new BeanCreationNotAllowedException(beanName,
 							"Singleton bean creation not allowed while the singletons of this factory are in destruction " +
 							"(Do not request a bean from a BeanFactory in a destroy method implementation!)");

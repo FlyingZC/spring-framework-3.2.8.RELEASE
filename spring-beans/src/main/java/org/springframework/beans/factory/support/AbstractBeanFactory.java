@@ -249,16 +249,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);// 返回对应的实例,有时候存在诸如BeanFactory的情况并不是直接返回实例本身而是返回指定方法返回的实例
 		}
 
-		else {
+		else {// 从上面 缓存中没有获取到bean的情况
 			// Fail if we're already creating this bean instance:只有在单例情况才会尝试解决循环依赖,原型模式情况下,如果存在A中有B的属性,B中有A的属性,那么当依赖注入的时候,就会产生当A还未创建完的时候因为对于B的创建再次返回创建A,造成循环依赖,也就是下面的情況
 			// We're assumably within a circular reference.
-			if (isPrototypeCurrentlyInCreation(beanName)) {
+			if (isPrototypeCurrentlyInCreation(beanName)) {// 原型模式 循环依赖 直接抛异常
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
 
 			// Check if bean definition exists in this factory.如果beanDefinitionMap中,也就是在所有已经加载的类中不包括 beanName 则尝试从parentBeanFactory中检测
 			BeanFactory parentBeanFactory = getParentBeanFactory();
-			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
+			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {// 当前加载的XML配置文件中不包含beanName所对应的配置,就只能到parentBeanFactory去尝试下
 				// Not found -> check parent.
 				String nameToLookup = originalBeanName(name);
 				if (args != null) {// 递归到BeanFactory中寻找
@@ -1453,7 +1453,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			return beanInstance;
 		}
 
-		Object object = null;//加载FactoryBean
+		Object object = null;// 加载FactoryBean
 		if (mbd == null) {
 			object = getCachedObjectForFactoryBean(beanName);// 尝试从缓存中加载bean
 		}

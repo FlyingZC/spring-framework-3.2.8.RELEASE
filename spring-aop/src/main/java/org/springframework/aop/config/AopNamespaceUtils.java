@@ -103,13 +103,13 @@ public abstract class AopNamespaceUtils {
 
 	private static void useClassProxyingIfNecessary(BeanDefinitionRegistry registry, Element sourceElement) {
 		if (sourceElement != null) {
-			boolean proxyTargetClass = Boolean.valueOf(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));
+			boolean proxyTargetClass = Boolean.valueOf(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));// 对于proxy-target-class属性的处理
 			if (proxyTargetClass) {
 				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
 			}
-			boolean exposeProxy = Boolean.valueOf(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE));
+			boolean exposeProxy = Boolean.valueOf(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE));// 对于expose-proxy属性的处理
 			if (exposeProxy) {
-				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);
+				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);// 强制使用的过程其实也是一个属性设置的过程
 			}
 		}
 	}

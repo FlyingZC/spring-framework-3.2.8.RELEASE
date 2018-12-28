@@ -93,7 +93,7 @@ public class ResourceEditorRegistrar implements PropertyEditorRegistrar {
 	}
 
 
-	/**
+	/** 注册了一系列的常用类型的属性编辑器
 	 * Populate the given {@code registry} with the following resource editors:
 	 * ResourceEditor, InputStreamEditor, InputSourceEditor, FileEditor, URLEditor,
 	 * URIEditor, ClassEditor, ClassArrayEditor.

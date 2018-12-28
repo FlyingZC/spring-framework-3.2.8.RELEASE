@@ -267,7 +267,7 @@ public abstract class AopUtils {
 		}
 	}
 
-	/**
+	/** 寻找所有增强器中适用于当前 class 的增强器
 	 * Determine the sublist of the {@code candidateAdvisors} list
 	 * that is applicable to the given class.
 	 * @param candidateAdvisors the Advisors to evaluate
@@ -280,7 +280,7 @@ public abstract class AopUtils {
 			return candidateAdvisors;
 		}
 		List<Advisor> eligibleAdvisors = new LinkedList<Advisor>();
-		for (Advisor candidate : candidateAdvisors) {
+		for (Advisor candidate : candidateAdvisors) {// 首先处理引介增强
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
 				eligibleAdvisors.add(candidate);
 			}
@@ -288,10 +288,10 @@ public abstract class AopUtils {
 		boolean hasIntroductions = !eligibleAdvisors.isEmpty();
 		for (Advisor candidate : candidateAdvisors) {
 			if (candidate instanceof IntroductionAdvisor) {
-				// already processed
+				// already processed 引介增强已经处理
 				continue;
 			}
-			if (canApply(candidate, clazz, hasIntroductions)) {
+			if (canApply(candidate, clazz, hasIntroductions)) {// 对于普通bean的处理
 				eligibleAdvisors.add(candidate);
 			}
 		}
