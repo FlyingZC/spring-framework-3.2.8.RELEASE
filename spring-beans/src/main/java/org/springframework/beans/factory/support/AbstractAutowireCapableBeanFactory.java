@@ -492,7 +492,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Allow post-processors to modify the merged bean definition. 应用MergedBeanDefinitionPostProcessor
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
-				applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);// 应用MergedBeanDefinitionPostProcessor
+				applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);// 应用MergedBeanDefinitionPostProcessor.bean合并后的处理,Autowired注解正是通过此方法实现诸如类型的预解析
 				mbd.postProcessed = true;
 			}
 		}
@@ -513,7 +513,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			});
 		}
 
-		// Initialize the bean instance.始依赖bean
+		// Initialize the bean instance.初始化依赖bean
 		Object exposedObject = bean;
 		try {// 对bean进行填充.将各个属性值注入.其中可能存在依赖于其他bean的属性,则会递归初始化
 			populateBean(beanName, mbd, instanceWrapper);
@@ -559,7 +559,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Register bean as disposable.
 		try {
-			registerDisposableBeanIfNecessary(beanName, bean, mbd);// 根据scopse注册bean
+			registerDisposableBeanIfNecessary(beanName, bean, mbd);// 若配置了destroy-method,这里需要注册以便在销毁时调用
 		}
 		catch (BeanDefinitionValidationException ex) {
 			throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Invalid destruction signature", ex);
@@ -962,7 +962,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				}
 			}
 		}
-		if (resolved) {// 如果已经解析过则使用解析好的构造函数方法不需要再次锁定
+		if (resolved) {// 如果已经解析过则使用解析好的构造函数方法,不需要再次锁定
 			if (autowireNecessary) {
 				return autowireConstructor(beanName, mbd, null, null);// 构造函数自动注入
 			}
@@ -1154,7 +1154,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				checkDependencies(beanName, mbd, filteredPds, pvs);
 			}
 		}
-		// 将属性应用到bean中
+		// 将属性应用到bean中,之前的步骤中只是将获取的属性存入PropertyValues中
 		applyPropertyValues(beanName, mbd, bw, pvs);
 	}
 

@@ -418,14 +418,14 @@ class ConstructorResolver {
 		}
 
 		if (factoryMethodToUse == null || argsToUse == null) {
-			// Need to determine the factory method...
-			// Try all methods with this name to see if they match the given arguments.
+			// Need to determine the factory method...需要确定factory method
+			// Try all methods with this name to see if they match the given arguments.尝试使用此名称的所有方法，以查看它们是否与给定的参数匹配
 			factoryClass = ClassUtils.getUserClass(factoryClass);
 
-			Method[] rawCandidates = getCandidateMethods(factoryClass, mbd);
+			Method[] rawCandidates = getCandidateMethods(factoryClass, mbd);// 获取所有方法
 			List<Method> candidateSet = new ArrayList<Method>();
 			for (Method candidate : rawCandidates) {
-				if (Modifier.isStatic(candidate.getModifiers()) == isStatic && mbd.isFactoryMethod(candidate)) {
+				if (Modifier.isStatic(candidate.getModifiers()) == isStatic && mbd.isFactoryMethod(candidate)) {// static修饰,且方法名和factory-method一样
 					candidateSet.add(candidate);
 				}
 			}
