@@ -52,7 +52,7 @@ import org.springframework.beans.BeansException;
  * @since 16 April 2001
  * @see HierarchicalBeanFactory
  * @see BeanFactoryUtils
- *///zc 从BeanFactory->ListableBeanFactory->ApplicationContext->WebApplicationContext和ConfigurableApplicationContext.ListBeanFactory接口中,细化了许多BeanFactory的接口功能,比如定义了getBeanDefinitionNames()接口方法.提供各种条件获取bean的配置清单
+ *///zc 从BeanFactory->ListableBeanFactory->ApplicationContext->WebApplicationContext和ConfigurableApplicationContext.ListBeanFactory接口中,细化了许多BeanFactory的接口功能,比如定义了getBeanDefinitionNames()接口方法.提供各种条件获取bean的配置清单. 获取多个 Bean
 public interface ListableBeanFactory extends BeanFactory {
 
 	/**

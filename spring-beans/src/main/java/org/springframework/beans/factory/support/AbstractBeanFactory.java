@@ -246,7 +246,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					logger.debug("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
-			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);// 返回对应的实例,有时候存在诸如BeanFactory的情况并不是直接返回实例本身而是返回指定方法返回的实例
+			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);// 返回对应的实例.若是普通 Bean,直接返回 sharedInstance. 若是 FactoryBean,返回它创建的那个实例对象.
 		}
 
 		else {// 从上面 缓存中没有获取到bean的情况
@@ -256,9 +256,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
 
-			// Check if bean definition exists in this factory.如果beanDefinitionMap中,也就是在所有已经加载的类中不包括 beanName 则尝试从parentBeanFactory中检测
+			// Check if bean definition exists in this factory.如果 beanDefinitionMap中,也就是在所有已经加载的类中不包括 beanName 则尝试从 parentBeanFactory中检测
 			BeanFactory parentBeanFactory = getParentBeanFactory();
-			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {// 当前加载的XML配置文件中不包含beanName所对应的配置,就只能到parentBeanFactory去尝试下
+			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {// 当前加载的XML配置文件中不包含beanName所对应的配置,就只能到 parentBeanFactory去尝试下
 				// Not found -> check parent.
 				String nameToLookup = originalBeanName(name);
 				if (args != null) {// 递归到BeanFactory中寻找
@@ -271,7 +271,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 
-			if (!typeCheckOnly) {// 如果不是仅仅做类型检查则是创建bean,这里要进行记录
+			if (!typeCheckOnly) {// 如果不是仅仅做类型检查则是创建 bean,这里要进行记录
 				markBeanAsCreated(beanName);
 			}
 
@@ -279,17 +279,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);// 将存储XML配置文件的GernericBeanDefinition转换为RootBeanDefinition,如果指定BeanName是子Bean的话同时会合并父类的相关属性
 				checkMergedBeanDefinition(mbd, beanName, args);
 
-				// Guarantee initialization of beans that the current bean depends on.
+				// Guarantee initialization of beans that the current bean depends on.保证当前bean依赖的bean的初始化
 				String[] dependsOn = mbd.getDependsOn();
 				if (dependsOn != null) {// 若存在依赖则需要递归实例化依赖的bean
 					for (String dependsOnBean : dependsOn) {
-						getBean(dependsOnBean);
+						getBean(dependsOnBean);// 初始化被依赖的 bean
 						registerDependentBean(dependsOnBean, beanName);// 缓存依赖调用
 					}
 				}
 
 				// Create bean instance.实例化依赖的bean后便可以实例化mbd本身了
-				if (mbd.isSingleton()) {// singleton模式的创建
+				if (mbd.isSingleton()) {// singleton bean的创建
 					sharedInstance = getSingleton(beanName, new ObjectFactory<Object>() {
 						public Object getObject() throws BeansException {
 							try {
@@ -307,12 +307,12 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				}
 
-				else if (mbd.isPrototype()) {// prototype模式的创建(new)
+				else if (mbd.isPrototype()) {// prototype bean的创建
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
 					try {
 						beforePrototypeCreation(beanName);
-						prototypeInstance = createBean(beanName, mbd, args);
+						prototypeInstance = createBean(beanName, mbd, args);// 创建 prototype bean
 					}
 					finally {
 						afterPrototypeCreation(beanName);
@@ -320,7 +320,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
 
-				else {
+				else {// 若不是 singleton 和 prototype 的话,需要委托给相应的实现类来处理
 					String scopeName = mbd.getScope();// 指定的scope上实例化bean
 					final Scope scope = this.scopes.get(scopeName);
 					if (scope == null) {
@@ -331,7 +331,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							public Object getObject() throws BeansException {
 								beforePrototypeCreation(beanName);
 								try {
-									return createBean(beanName, mbd, args);
+									return createBean(beanName, mbd, args);// 创建 Bean
 								}
 								finally {
 									afterPrototypeCreation(beanName);

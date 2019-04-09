@@ -127,7 +127,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 			DefaultListableBeanFactory beanFactory = createBeanFactory();// 创建DefaultListableBeanFactory
 			beanFactory.setSerializationId(getId());// 为了序列化指定id,如果需要的话,让这个BeanFactory从id反序列化到BeanFactory对象
 			customizeBeanFactory(beanFactory);// 定制beanFactory,设置相关属性.包括是否允许覆盖同名称的不同定义的对象 以及循环依赖 以及设置 @Autowired 和 @Qualifier 注解解析器 QualifierAnnotationAutowire
-			loadBeanDefinitions(beanFactory);// 初始化DodumentReader,并进行XML文件读取及解析. 经过该步骤后,beanFactory中已经包含了所有解析好的配置
+			loadBeanDefinitions(beanFactory);// 根据配置，加载各个 Bean，然后放到 BeanFactory 中. // 初始化DodumentReader,并进行XML文件读取及解析. 经过该步骤后,beanFactory中已经包含了所有解析好的配置
 			synchronized (this.beanFactoryMonitor) {
 				this.beanFactory = beanFactory;
 			}
@@ -210,7 +210,7 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	 */
 	protected void customizeBeanFactory(DefaultListableBeanFactory beanFactory) {
 		if (this.allowBeanDefinitionOverriding != null) {// 如果属性allowBeanDefinitionOverriding不为空,设置给beanFactory对象相应属性
-			beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);// 此属性的含义:是否允许覆盖同名称的不同定义的对象
+			beanFactory.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);// 此属性的含义:是否允许覆盖同名称的不同定义的对象. 默认情况下，allowBeanDefinitionOverriding 属性为 null，若在同一配置文件中重复了，会抛错，但是若不是同一配置文件中，会发生覆盖。
 		}
 		if (this.allowCircularReferences != null) {// 如果属性allowCircularReferences不为空,设置给beanFactory对象相应属性
 			beanFactory.setAllowCircularReferences(this.allowCircularReferences);// 此属性的含义:是否允许bean之间存在循环依赖

@@ -603,10 +603,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
 			beanNames = new ArrayList<String>(this.beanDefinitionNames);
 		}
-		for (String beanName : beanNames) {
-			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
-			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
-				if (isFactoryBean(beanName)) {
+		for (String beanName : beanNames) {// 触发所有的非懒加载的 singleton beans 的初始化操作
+			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);// 合并父 Bean中的配置，即<bean id="" class="" parent="" /> 配置中的 parent
+			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {// 非抽象、非懒加载的 singletons.若配置了 'abstract = true',那是不需要初始化的
+				if (isFactoryBean(beanName)) {// 处理 FactoryBean
 					final FactoryBean<?> factory = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName);
 					boolean isEagerInit;
 					if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
@@ -625,7 +625,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}
 				}
 				else {
-					getBean(beanName);
+					getBean(beanName);// 对于普通的 Bean,只要调用 getBean(beanName) 这个方法就可以进行初始化了
 				}
 			}
 		}

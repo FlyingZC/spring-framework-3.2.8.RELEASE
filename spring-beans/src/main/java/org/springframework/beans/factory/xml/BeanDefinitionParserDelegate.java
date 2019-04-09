@@ -439,7 +439,7 @@ public class BeanDefinitionParserDelegate {
 	}
 
 
-	/**
+	/** 解析<bean>元素
 	 * Parses the supplied {@code &lt;bean&gt;} element. May return {@code null}
 	 * if there were errors during parse. Errors are reported to the
 	 * {@link org.springframework.beans.factory.parsing.ProblemReporter}.
@@ -464,7 +464,7 @@ public class BeanDefinitionParserDelegate {
 		}
 
 		String beanName = id;
-		if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {
+		if (!StringUtils.hasText(beanName) && !aliases.isEmpty()) {// 如果没有指定id, 那么用别名列表的第一个名字作为beanName
 			beanName = aliases.remove(0);
 			if (logger.isDebugEnabled()) {
 				logger.debug("No XML 'id' specified - using '" + beanName +
@@ -534,7 +534,7 @@ public class BeanDefinitionParserDelegate {
 		this.usedNames.addAll(aliases);
 	}
 
-	/**
+	/** 解析bean definition,不考虑name和aliases
 	 * Parse the bean definition itself, without regard to name or aliases. May return
 	 * {@code null} if problems occurred during the parsing of the bean definition.
 	 */

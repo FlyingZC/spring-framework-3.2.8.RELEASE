@@ -319,7 +319,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyConfig
 		if (bean != null) {
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);// 根据给定的bean的class和name构建出个key， 格式： beanClassName_beanName
 			if (!this.earlyProxyReferences.containsKey(cacheKey)) {
-				return wrapIfNecessary(bean, beanName, cacheKey);// 如果它适合被代理,则需要封装指定bean。
+				return wrapIfNecessary(bean, beanName, cacheKey);// 这个方法将返回代理类（如果需要的话）.// 如果它适合被代理,则需要封装指定bean。
 			}
 		}
 		return bean;
@@ -354,9 +354,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyConfig
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
 			return bean;
 		}
-
+        // 上面过滤掉了不需要增强生成代理的场景.
 		// Create proxy if we have advice.如果存在增强方法则创建代理
-		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
+		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);// 返回匹配当前 bean的所有的 advisor、advice、interceptor
 		if (specificInterceptors != DO_NOT_PROXY) {// 如果获取到了增强则需要针对增强创建代理
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
 			Object proxy = createProxy(bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));// 创建代理
@@ -446,13 +446,13 @@ public abstract class AbstractAutoProxyCreator extends ProxyConfig
 	 * @see #buildAdvisors
 	 */
 	protected Object createProxy(
-			Class<?> beanClass, String beanName, Object[] specificInterceptors, TargetSource targetSource) {
+			Class<?> beanClass, String beanName, Object[] specificInterceptors, TargetSource targetSource) {// specificInterceptors参数携带了所有的 advisors, targetSource携带了真实实现的信息
 
 		ProxyFactory proxyFactory = new ProxyFactory();
 		// Copy our properties (proxyTargetClass etc) inherited from ProxyConfig.获取当前类中相关属性
 		proxyFactory.copyFrom(this);
-		// 决定对于给定的bean是否应该使用targetClass而不是他的接口代理,检查proxyTargeClass设置以及preserveTargetClass属性
-		if (!shouldProxyTargetClass(beanClass, beanName)) {
+		// 决定对于给定的bean是否应该使用 targetClass而不是他的接口代理,检查 proxyTargeClass设置以及 preserveTargetClass属性
+		if (!shouldProxyTargetClass(beanClass, beanName)) {// <aop:config>这个节点中 proxy-target-class="false"或 proxy-target-class不配置，即不使用CGLIB生成代理.若满足条件，进判断
 			// Must allow for introductions; can't just set interfaces to
 			// the target's interfaces only.
 			Class<?>[] targetInterfaces = ClassUtils.getAllInterfacesForClass(beanClass, this.proxyClassLoader);

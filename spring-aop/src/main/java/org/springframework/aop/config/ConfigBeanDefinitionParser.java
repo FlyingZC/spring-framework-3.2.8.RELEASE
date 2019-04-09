@@ -48,7 +48,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.StringUtils;
 import org.springframework.util.xml.DomUtils;
 
-/**
+/** 处理<aop:config>标签
  * {@link BeanDefinitionParser} for the {@code &lt;aop:config&gt;} tag.
  *
  * @author Rob Harrop
@@ -111,7 +111,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 			else if (ADVISOR.equals(localName)) {
 				parseAdvisor(elt, parserContext);
 			}
-			else if (ASPECT.equals(localName)) {
+			else if (ASPECT.equals(localName)) {// 解析<aop:aspect>
 				parseAspect(elt, parserContext);
 			}
 		}
@@ -211,9 +211,9 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 			// ordering semantics right.
 			NodeList nodeList = aspectElement.getChildNodes();
 			boolean adviceFoundAlready = false;
-			for (int i = 0; i < nodeList.getLength(); i++) {
+			for (int i = 0; i < nodeList.getLength(); i++) {// 遍历子节点
 				Node node = nodeList.item(i);
-				if (isAdviceNode(node, parserContext)) {
+				if (isAdviceNode(node, parserContext)) {// 是<aop:before>、<aop:after>、<aop:after-returning>、<aop:after-throwing method="">、<aop:around method="">这五个标签中的一个
 					if (!adviceFoundAlready) {
 						adviceFoundAlready = true;
 						if (!StringUtils.hasText(aspectName)) {
@@ -235,7 +235,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 			parserContext.pushContainingComponent(aspectComponentDefinition);
 
 			List<Element> pointcuts = DomUtils.getChildElementsByTagName(aspectElement, POINTCUT);
-			for (Element pointcutElement : pointcuts) {
+			for (Element pointcutElement : pointcuts) {// 解析<aop:pointcut>
 				parsePointcut(pointcutElement, parserContext);
 			}
 
@@ -256,7 +256,7 @@ class ConfigBeanDefinitionParser implements BeanDefinitionParser {
 		return new AspectComponentDefinition(aspectId, beanDefArray, beanRefArray, source);
 	}
 
-	/**
+	/** <aop:before>、<aop:after>、<aop:after-returning>、<aop:after-throwing method="">、<aop:around method="">这五个标签中的一个
 	 * Return {@code true} if the supplied node describes an advice type. May be one of:
 	 * '{@code before}', '{@code after}', '{@code after-returning}',
 	 * '{@code after-throwing}' or '{@code around}'.

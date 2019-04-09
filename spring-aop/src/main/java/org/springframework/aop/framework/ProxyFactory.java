@@ -108,7 +108,7 @@ public class ProxyFactory extends ProxyCreatorSupport {
 	 * @return the proxy object
 	 */
 	public Object getProxy(ClassLoader classLoader) {
-		return createAopProxy().getProxy(classLoader);
+		return createAopProxy().getProxy(classLoader);// 1.创建 AopProxy接口实现类;2.通过 AopProxy接口的实现类的 getProxy()方法获取<bean>对应的代理
 	}
 
 

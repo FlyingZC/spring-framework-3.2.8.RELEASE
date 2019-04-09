@@ -191,8 +191,8 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 					if (delegate.isDefaultNamespace(ele)) {// 对普通bean的处理,<bean id="test" class="test.TestBean"/>
 						parseDefaultElement(ele, delegate);
 					}
-					else {// 对用户自定义bean的处理,如<tx:annotation-driven/>
-						delegate.parseCustomElement(ele);
+					else {// 对用户自定义bean的处理,如<tx:annotation-driven/>, <mvc />、<task />、<context />、<aop />...
+						delegate.parseCustomElement(ele);// 自定义标签需要相应的 parser 来解析,如 ContextNamespaceHandler
 					}
 				}
 			}
@@ -201,7 +201,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 			delegate.parseCustomElement(root);
 		}
 	}
-
+    // 因为这四个标签都处于http://www.springframework.org/schema/beans 这个namespace下
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
 			importBeanDefinitionResource(ele);// 对import标签的处理
@@ -319,11 +319,11 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * and registering it with the registry.
 	 */
 	protected void processBeanDefinition(Element ele, BeanDefinitionParserDelegate delegate) {
-		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);// 1.委托BeanDefinitionDelegate.parseBeanDefinitionElement()进行元素解析,返回BeanDefinitionHolder类型的实例bdHolder.经过这个方法后,bdHolder实例中已经包含配置文件中的各种属性了,例如class,name,id,alias等
+		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);// 1.将 <bean /> 节点中的信息提取出来，然后封装到一个 BeanDefinitionHolder 中. // 委托BeanDefinitionDelegate.parseBeanDefinitionElement()进行元素解析,返回BeanDefinitionHolder类型的实例bdHolder.经过这个方法后,bdHolder实例中已经包含配置文件中的各种属性了,例如class,name,id,alias等
 		if (bdHolder != null) {
-			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);// 2.当返回的bdHolder不为空时,若存在默认标签的子节点下再有自定义属性,还需再次对自定义标签进行解析
+			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);// 如果有自定义属性的话，进行相应的解析 // 2.当返回的bdHolder不为空时,若存在默认标签的子节点下再有自定义属性,还需再次对自定义标签进行解析
 			try {
-				// Register the final decorated instance. 3.解析完成后,需要对解析后的bdHolder进行注册.同样,注册操作委托给了 BeanDefinitionReaderUtils的registerBeanDefinition方法
+				// Register the final decorated instance. // 注册bean // 3.解析完成后,需要对解析后的bdHolder进行注册.同样,注册操作委托给了 BeanDefinitionReaderUtils的registerBeanDefinition方法
 				BeanDefinitionReaderUtils.registerBeanDefinition(bdHolder, getReaderContext().getRegistry());
 			}
 			catch (BeanDefinitionStoreException ex) {
