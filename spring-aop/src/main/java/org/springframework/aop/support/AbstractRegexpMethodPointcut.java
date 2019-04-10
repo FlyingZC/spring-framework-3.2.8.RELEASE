@@ -122,7 +122,7 @@ public abstract class AbstractRegexpMethodPointcut extends StaticMethodMatcherPo
 	}
 
 
-	/**
+	/** 方法名 是否 匹配 切点表达式(正则表达式)
 	 * Try to match the regular expression against the fully qualified name
 	 * of the target class as well as against the method's declaring class,
 	 * plus the name of the method.

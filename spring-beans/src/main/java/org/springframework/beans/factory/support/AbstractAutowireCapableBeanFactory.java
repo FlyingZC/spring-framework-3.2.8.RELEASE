@@ -1470,7 +1470,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 
-	/** 所有的 BeanPostProcessor.postProcessBeforeInitialization() -> InitializingBean.afterPropertiesSet() -> init-method -> 所有的 BeanPostProcessor.applyBeanPostProcessorsAfterInitialization()
+	/** Aware接口方法 -> 所有的 BeanPostProcessor.postProcessBeforeInitialization() -> InitializingBean.afterPropertiesSet() -> init-method -> 所有的 BeanPostProcessor.applyBeanPostProcessorsAfterInitialization()
 	 * Initialize the given bean instance, applying factory callbacks
 	 * as well as init methods and bean post processors.
 	 * <p>Called from {@link #createBean} for traditionally defined beans,
@@ -1568,7 +1568,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				}
 			}
 			else {
-				((InitializingBean) bean).afterPropertiesSet();
+				((InitializingBean) bean).afterPropertiesSet();// 调用 afterPropertiesSet()方法
 			}
 		}
 
@@ -1576,7 +1576,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			String initMethodName = mbd.getInitMethodName();
 			if (initMethodName != null && !(isInitializingBean && "afterPropertiesSet".equals(initMethodName)) &&
 					!mbd.isExternallyManagedInitMethod(initMethodName)) {
-				invokeCustomInitMethod(beanName, bean, mbd);
+				invokeCustomInitMethod(beanName, bean, mbd);// 调用自定义的 init-method方法
 			}
 		}
 	}

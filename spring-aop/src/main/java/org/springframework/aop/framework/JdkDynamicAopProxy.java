@@ -159,7 +159,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 		try {
 			if (!this.equalsDefined && AopUtils.isEqualsMethod(method)) {
 				// The target does not implement the equals(Object) method itself.
-				return equals(args[0]);
+				return equals(args[0]);// 代理的 equals 方法
 			}
 			if (!this.hashCodeDefined && AopUtils.isHashCodeMethod(method)) {
 				// The target does not implement the hashCode() method itself.
@@ -174,7 +174,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			Object retVal;
 
 			if (this.advised.exposeProxy) {
-				// Make invocation available if necessary.
+				// Make invocation available if necessary.// 如果设置了 exposeProxy，那么将 proxy 放到 ThreadLocal 中
 				oldProxy = AopContext.setCurrentProxy(proxy);
 				setProxyContext = true;
 			}
@@ -186,19 +186,19 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 				targetClass = target.getClass();
 			}
 
-			// Get the interception chain for this method.
+			// Get the interception chain for this method.创建一个 chain，包含所有要执行的 advice
 			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 
 			// Check whether we have any advice. If we don't, we can fallback on direct
 			// reflective invocation of the target, and avoid creating a MethodInvocation.
-			if (chain.isEmpty()) {
+			if (chain.isEmpty()) {//  chain 是空的，说明不需要被增强
 				// We can skip creating a MethodInvocation: just invoke the target directly
 				// Note that the final invoker must be an InvokerInterceptor so we know it does
 				// nothing but a reflective operation on the target, and no hot swapping or fancy proxying.
 				retVal = AopUtils.invokeJoinpointUsingReflection(target, method, args);
 			}
 			else {
-				// We need to create a method invocation...
+				// We need to create a method invocation...执行方法，得到返回值
 				invocation = new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);
 				// Proceed to the joinpoint through the interceptor chain.
 				retVal = invocation.proceed();

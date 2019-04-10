@@ -336,7 +336,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyConfig
 		return beanClass.getName() + "_" + beanName;
 	}
 
-	/**
+	/** 返回 bean的代理类（如果需要的话）
 	 * Wrap the given bean if necessary, i.e. if it is eligible for being proxied.
 	 * @param bean the raw bean instance
 	 * @param beanName the name of the bean
@@ -357,7 +357,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyConfig
         // 上面过滤掉了不需要增强生成代理的场景.
 		// Create proxy if we have advice.如果存在增强方法则创建代理
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);// 返回匹配当前 bean的所有的 advisor、advice、interceptor
-		if (specificInterceptors != DO_NOT_PROXY) {// 如果获取到了增强则需要针对增强创建代理
+		if (specificInterceptors != DO_NOT_PROXY) {// 如果有匹配的 advisors,则需要针对增强创建代理
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
 			Object proxy = createProxy(bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));// 创建代理
 			this.proxyTypes.put(cacheKey, proxy.getClass());

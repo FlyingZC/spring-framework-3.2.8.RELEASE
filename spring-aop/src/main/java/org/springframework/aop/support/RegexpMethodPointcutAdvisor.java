@@ -113,14 +113,14 @@ public class RegexpMethodPointcutAdvisor extends AbstractGenericPointcutAdvisor 
 	}
 
 
-	/**
+	/** 实例化 advisor中的 Pointcut
 	 * Initialize the singleton Pointcut held within this Advisor.
 	 */
 	public Pointcut getPointcut() {
 		synchronized (this.pointcutMonitor) {
 			if (this.pointcut == null) {
 				this.pointcut = createPointcut();
-				this.pointcut.setPatterns(this.patterns);
+				this.pointcut.setPatterns(this.patterns);// 设置切点表达式 到 切点中
 			}
 			return pointcut;
 		}

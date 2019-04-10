@@ -193,7 +193,7 @@ public abstract class AopUtils {
 		return canApply(pc, targetClass, false);
 	}
 
-	/** 判断给定的切入点是否适用于给定的类
+	/** 判断给定的切点 是否 适用于 给定的类
 	 * Can the given pointcut apply at all on the given class?
 	 * <p>This is an important test as it can be used to optimize
 	 * out a pointcut for a class.
@@ -209,7 +209,7 @@ public abstract class AopUtils {
 			return false;
 		}
 
-		MethodMatcher methodMatcher = pc.getMethodMatcher();
+		MethodMatcher methodMatcher = pc.getMethodMatcher();// 方法匹配
 		IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null;
 		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {
 			introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
@@ -259,7 +259,7 @@ public abstract class AopUtils {
 		}
 		else if (advisor instanceof PointcutAdvisor) {
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
-			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
+			return canApply(pca.getPointcut(), targetClass, hasIntroductions);// 切点表达式 匹配 目标类(中的方法)
 		}
 		else {
 			// It doesn't have a pointcut so we assume it applies.
@@ -291,7 +291,7 @@ public abstract class AopUtils {
 				// already processed 引介增强已经处理
 				continue;
 			}
-			if (canApply(candidate, clazz, hasIntroductions)) {// 对于普通bean的处理
+			if (canApply(candidate, clazz, hasIntroductions)) {// 查看该 advisor能否应用于该 bean
 				eligibleAdvisors.add(candidate);
 			}
 		}
