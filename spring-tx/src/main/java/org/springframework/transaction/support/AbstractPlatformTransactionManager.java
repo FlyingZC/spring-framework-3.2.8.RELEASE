@@ -342,17 +342,17 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			// Use defaults if no transaction definition given.
 			definition = new DefaultTransactionDefinition();
 		}
-
+        // 已经存在事务的情况
 		if (isExistingTransaction(transaction)) {
 			// Existing transaction found -> check propagation behavior to find out how to behave.
 			return handleExistingTransaction(definition, transaction, debugEnabled);
 		}
-
+        // timeout不能小于-1
 		// Check definition settings for new transaction.
 		if (definition.getTimeout() < TransactionDefinition.TIMEOUT_DEFAULT) {
 			throw new InvalidTimeoutException("Invalid transaction timeout", definition.getTimeout());
 		}
-
+        // 如果传播行为是 MANDATORY,则应该抛出异常(因为此时不存在事务)
 		// No existing transaction found -> check propagation behavior to find out how to proceed.
 		if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_MANDATORY) {
 			throw new IllegalTransactionStateException(
@@ -360,7 +360,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		}
 		else if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED ||
 				definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW ||
-			definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
+			definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {// 传播行为是REQUIRED, REQUIRES_NEW, NESTED
 			SuspendedResourcesHolder suspendedResources = suspend(null);
 			if (debugEnabled) {
 				logger.debug("Creating new transaction with name [" + definition.getName() + "]: " + definition);
@@ -369,8 +369,8 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				boolean newSynchronization = (getTransactionSynchronization() != SYNCHRONIZATION_NEVER);
 				DefaultTransactionStatus status = newTransactionStatus(
 						definition, transaction, true, newSynchronization, debugEnabled, suspendedResources);
-				doBegin(transaction, definition);
-				prepareSynchronization(status, definition);
+				doBegin(transaction, definition);// 调用供子类实现的模板方法doBegin来开启事务
+				prepareSynchronization(status, definition);// 调用 TransactionSynchronizationManager来保存一些事务上下文信息
 				return status;
 			}
 			catch (RuntimeException ex) {

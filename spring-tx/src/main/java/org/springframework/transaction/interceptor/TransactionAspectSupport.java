@@ -245,13 +245,13 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	protected Object invokeWithinTransaction(Method method, Class targetClass, final InvocationCallback invocation)
 			throws Throwable {
 
-		// If the transaction attribute is null, the method is non-transactional.
+		// If the transaction attribute is null, the method is non-transactional.获取 TransactionAttribute、PlatformTransactionManager、以及连接点方法信息。
 		final TransactionAttribute txAttr = getTransactionAttributeSource().getTransactionAttribute(method, targetClass);
 		final PlatformTransactionManager tm = determineTransactionManager(txAttr);
 		final String joinpointIdentification = methodIdentification(method, targetClass);
 
 		if (txAttr == null || !(tm instanceof CallbackPreferringPlatformTransactionManager)) {
-			// Standard transaction demarcation with getTransaction and commit/rollback calls.
+			// Standard transaction demarcation with getTransaction and commit/rollback calls.开启事务
 			TransactionInfo txInfo = createTransactionIfNecessary(tm, txAttr, joinpointIdentification);
 			Object retVal = null;
 			try {
