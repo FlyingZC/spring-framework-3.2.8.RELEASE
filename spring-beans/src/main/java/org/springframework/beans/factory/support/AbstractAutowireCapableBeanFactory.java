@@ -498,7 +498,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
         // 下面 用于解决循环依赖
 		// Eagerly cache singletons to be able to resolve circular references
-		// even when triggered by lifecycle interfaces like BeanFactoryAware. 是否需要提早曝光:单例&允许循环依赖&当前bean正在创建中，检测循环依赖
+		// even when triggered by lifecycle interfaces like BeanFactoryAware. 是否需要提早暴露:单例 且 允许循环依赖 且 当前bean正在创建中,检测循环依赖
 		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
 				isSingletonCurrentlyInCreation(beanName));
 		if (earlySingletonExposure) {
@@ -506,9 +506,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				logger.debug("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
-			addSingletonFactory(beanName, new ObjectFactory<Object>() {// 为避免后期循环依赖，可以在bean初始化完成前将创建实例的ObjectFactory加入工厂
-				public Object getObject() throws BeansException {// 其中我们熟知的AOP就是在这里将advice动态织入bean中，若没有则直接返回bean，不做任何处理
-					return getEarlyBeanReference(beanName, mbd, bean);// 对bean再一次依赖引用，主要应用SmartInstantiationAware BeanPostProcessor
+			addSingletonFactory(beanName, new ObjectFactory<Object>() {// 在 bean初始化完成前,新建 ObjectFactory加入 singletonFactories缓存,用于处理循环依赖
+				public Object getObject() throws BeansException {// 其中我们熟知的 AOP就是在这里将 advice动态织入 bean中,若没有则直接返回 bean,不做任何处理
+					return getEarlyBeanReference(beanName, mbd, bean);// 返回 早期引用的 bean
 				}
 			});
 		}
@@ -1083,7 +1083,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param bw BeanWrapper with bean instance
 	 */
 	protected void populateBean(String beanName, RootBeanDefinition mbd, BeanWrapper bw) {
-		PropertyValues pvs = mbd.getPropertyValues();//  bean实例的所有属性都在这里了
+		PropertyValues pvs = mbd.getPropertyValues();//  bean实例的所有属性列表
 
 		if (bw == null) {
 			if (!pvs.isEmpty()) {
@@ -1381,7 +1381,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		if (pvs instanceof MutablePropertyValues) {
 			mpvs = (MutablePropertyValues) pvs;
-			if (mpvs.isConverted()) {// /如果mpvs中的值已经被转换为对应的类型那么可以直接设置到beanwapper中
+			if (mpvs.isConverted()) {// 若 mpvs中的值已经被转换为对应的类型,那么可以直接设置到 beanwapper中
 				// Shortcut: use the pre-converted values as-is.
 				try {
 					bw.setPropertyValues(mpvs);
@@ -1394,7 +1394,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 			original = mpvs.getPropertyValueList();
 		}
-		else {// 如果pvs并不是使用MutablePropertyValues封装的类型,那么直接使用原始的属性获取方法
+		else {// 如果 pvs并不是使用 MutablePropertyValues封装的类型,那么直接使用原始的属性获取方法
 			original = Arrays.asList(pvs.getPropertyValues());
 		}
 
@@ -1447,7 +1447,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		// Set our (possibly massaged) deep copy.
 		try {
-			bw.setPropertyValues(new MutablePropertyValues(deepCopy));
+			bw.setPropertyValues(new MutablePropertyValues(deepCopy)); // 设置属性值
 		}
 		catch (BeansException ex) {
 			throw new BeanCreationException(

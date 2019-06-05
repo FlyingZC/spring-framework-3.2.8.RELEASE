@@ -16,7 +16,7 @@
 
 package org.springframework.beans.factory;
 
-/**
+/** 父子级联IoC容器的接口, getParentBeanFactory() 子容器可以通过该方法访问父容器.
  * Sub-interface implemented by bean factories that can be part
  * of a hierarchy.
  *

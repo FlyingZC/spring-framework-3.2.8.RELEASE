@@ -605,7 +605,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		}
 		for (String beanName : beanNames) {// 触发所有的非懒加载的 singleton beans 的初始化操作
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);// 合并父 Bean中的配置，即<bean id="" class="" parent="" /> 配置中的 parent
-			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {// 非抽象、非懒加载的 singletons.若配置了 'abstract = true',那是不需要初始化的
+			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {// 非 abstract,单例,非懒加载,进行初始化
 				if (isFactoryBean(beanName)) {// 处理 FactoryBean
 					final FactoryBean<?> factory = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName);
 					boolean isEagerInit;

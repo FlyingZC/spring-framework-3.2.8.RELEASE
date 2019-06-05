@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.springframework.beans.BeansException;
 
-/**
+/** 定义了访问容器中Bean基本信息的若干方法，如查看Bean的个数、获取某一类型Bean、获取含有某个注解的bean.
  * Extension of the {@link BeanFactory} interface to be implemented by bean factories
  * that can enumerate all their bean instances, rather than attempting bean lookup
  * by name one by one as requested by clients. BeanFactory implementations that

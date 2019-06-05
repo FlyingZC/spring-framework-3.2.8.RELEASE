@@ -622,11 +622,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				}
 			}
 			Map<String, BeanDefinitionRegistryPostProcessor> beanMap =
-					beanFactory.getBeansOfType(BeanDefinitionRegistryPostProcessor.class, true, false);//  配置注册的后处理器
+					beanFactory.getBeansOfType(BeanDefinitionRegistryPostProcessor.class, true, false);//  配置注册的后处理器, BeanDefinitionRegistryPostProcessor类型的 bean
 			List<BeanDefinitionRegistryPostProcessor> registryPostProcessorBeans =
-					new ArrayList<BeanDefinitionRegistryPostProcessor>(beanMap.values());
-			OrderComparator.sort(registryPostProcessorBeans);
-			for (BeanDefinitionRegistryPostProcessor postProcessor : registryPostProcessorBeans) {
+					new ArrayList<BeanDefinitionRegistryPostProcessor>(beanMap.values()); // 存放
+			OrderComparator.sort(registryPostProcessorBeans); // 排序
+			for (BeanDefinitionRegistryPostProcessor postProcessor : registryPostProcessorBeans) { // 循环调
 				postProcessor.postProcessBeanDefinitionRegistry(registry);// BeanDefinitionRegistryPostProcessor的特殊处理
 			}
 			invokeBeanFactoryPostProcessors(registryPostProcessors, beanFactory);// 激活postProcessBeanFactory方法, 之前激活的是postProcessBeanDefinitionRegistry.硬编码设置的BeanDefinitionRegistryPostProcessor

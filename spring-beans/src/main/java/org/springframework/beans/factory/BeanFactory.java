@@ -18,7 +18,7 @@ package org.springframework.beans.factory;
 
 import org.springframework.beans.BeansException;
 
-/**
+/** Bean工厂.方法 getBean(String beanName) 从容器中返回特定名称的Bean.还提供判断 bean是 singleton还是 prototype
  * The root interface for accessing a Spring bean container.
  * This is the basic client view of a bean container;
  * further interfaces such as {@link ListableBeanFactory} and

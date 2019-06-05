@@ -729,7 +729,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 		return this.constructorArgumentValues;
 	}
 
-	/**
+	/** 该 bean指定了带参数的构造函数
 	 * Return if there are constructor argument values defined for this bean.
 	 */
 	public boolean hasConstructorArgumentValues() {

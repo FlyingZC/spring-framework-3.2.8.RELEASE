@@ -176,16 +176,16 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @return the registered singleton object, or {@code null} if none found
 	 */
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
-		Object singletonObject = this.singletonObjects.get(beanName);// 检查缓存中是否存在实例, singletonObjects：用于保存BeanName和创建bean实例之间的关系, bean name --> bean instance
-		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {// 如果为空,则锁定全局变量并进行处理
-			synchronized (this.singletonObjects) {// 如果此bean正在加载则不处理
-				singletonObject = this.earlySingletonObjects.get(beanName);
-				if (singletonObject == null && allowEarlyReference) {// 当某些方法需要提前初始化的时候则会调用 addSingletonFactory 方法将对应的ObjectFactory初始化策略存储在singletonFactories(beanName);
-					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);// 再尝试从singletonFactories里面获取beanName对应的ObjectFactory，然后调用这个ObjectFactory的getObject来创建bean，并放到earlySingleton Objects里面去,并且从singletonFacotories里面remove掉这个ObjectFactory // singletonFactories：用于保存BeanName和创建 bean的工厂之间的关系，bean name -->ObjectFactory
-					if (singletonFactory != null) {// 调用预先设定的getObject方法
-						singletonObject = singletonFactory.getObject();// 初始化bean
-						this.earlySingletonObjects.put(beanName, singletonObject);// 记录在缓存中,earlySingletonObjects和singletonFactories互斥
-						this.singletonFactories.remove(beanName);// 并且从singletonFactories中移除掉这个ObjectFactory
+		Object singletonObject = this.singletonObjects.get(beanName);// 检查缓存中是否存在该实例, singletonObjects：用于保存 BeanName和 创建的 bean实例 之间的关系, bean name --> bean instance
+		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) { // singletonObject缓存无 且 当前 bean正在创建中
+			synchronized (this.singletonObjects) {// 加锁
+				singletonObject = this.earlySingletonObjects.get(beanName); // 从 早期暴露 bean缓存里 取
+				if (singletonObject == null && allowEarlyReference) {// 早期暴露 bean缓存中没获取到 且 允许早期循环依赖
+					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);// 再尝试从 singletonFactories里面获取 beanName对应的 ObjectFactory.调用该 ObjectFactory.getObject()来创建bean,并放入 earlySingleton缓存中去,再从 singletonFacotories里面 remove掉这个 ObjectFactory // singletonFactories：用于保存 BeanName和 [创建 bean的工厂] 之间的关系,bean name -->ObjectFactory
+					if (singletonFactory != null) {
+						singletonObject = singletonFactory.getObject();// 初始化 bean,早期暴露的 bean,还未注入属性
+						this.earlySingletonObjects.put(beanName, singletonObject);// 记录在 [早期暴露 bean缓存] 中, earlySingletonObjects 和 singletonFactories互斥
+						this.singletonFactories.remove(beanName);// 从 singletonFactories中移除掉这个 ObjectFactory
 					}
 				}
 			}
@@ -204,8 +204,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "'beanName' must not be null");
 		synchronized (this.singletonObjects) {// 全局变量需要同步
-			Object singletonObject = this.singletonObjects.get(beanName);// 从缓存中取.首先检查对应的bean是否已经加载过，因为singleton模式其实就是复用以创建的bean，所以这一步是必须的
-			if (singletonObject == null) {// 如果为空才可以进行singleto的bean的初始化
+			Object singletonObject = this.singletonObjects.get(beanName);// 从缓存中取.先检查单例 bean是否已创建过
+			if (singletonObject == null) {// 缓存为空,创建
 				if (this.singletonsCurrentlyInDestruction) {// 正在销毁
 					throw new BeanCreationNotAllowedException(beanName,
 							"Singleton bean creation not allowed while the singletons of this factory are in destruction " +
@@ -214,7 +214,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
-				beforeSingletonCreation(beanName);// 这里记录加载状态.将当前正要创建的bean记录在缓存中，这样便可以对循环依赖进行检测
+				beforeSingletonCreation(beanName);// 记录加载状态到 singletonsCurrentlyInCreation 中.将当前正要创建的 bean记录在缓存中,用于后面对循环依赖进行检测
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
 				if (recordSuppressedExceptions) {
 					this.suppressedExceptions = new LinkedHashSet<Exception>();
