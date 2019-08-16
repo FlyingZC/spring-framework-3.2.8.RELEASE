@@ -317,9 +317,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyConfig
 	 */
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		if (bean != null) {
-			Object cacheKey = getCacheKey(bean.getClass(), beanName);// 根据给定的bean的class和name构建出个key， 格式： beanClassName_beanName
+			Object cacheKey = getCacheKey(bean.getClass(), beanName); // 根据给定的bean的class和name构建出个key， 格式： beanClassName_beanName
 			if (!this.earlyProxyReferences.containsKey(cacheKey)) {
-				return wrapIfNecessary(bean, beanName, cacheKey);// 这个方法将返回代理类（如果需要的话）.// 如果它适合被代理,则需要封装指定bean。
+				return wrapIfNecessary(bean, beanName, cacheKey); // 如果需要,为 bean 生成代理对象
 			}
 		}
 		return bean;
@@ -350,8 +350,8 @@ public abstract class AbstractAutoProxyCreator extends ProxyConfig
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {// 无需增强
 			return bean;
 		}
-		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {// 给定的bean类是否代表一个基础设施类， 基础设施类不应代理,或者配置了指定bean不需要自动代理
-			this.advisedBeans.put(cacheKey, Boolean.FALSE);
+		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) { // 1.给定的 bean类是否代表一个基础设施类(Pointcut, Advice, Advisor 等接口的实现类)或类上有 @Aspectj注解,不应该生成代理; 2.或配置了指定 bean不需要自动代理
+			this.advisedBeans.put(cacheKey, Boolean.FALSE); // 添加到 无需增强 bean 缓存
 			return bean;
 		}
         // 上面过滤掉了不需要增强生成代理的场景.
@@ -461,8 +461,8 @@ public abstract class AbstractAutoProxyCreator extends ProxyConfig
 			}
 		}
 
-		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
-		for (Advisor advisor : advisors) {//加入增强器
+		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors); // 封装 advisors
+		for (Advisor advisor : advisors) { // 加入 advisors 到 proxyFactory 中
 			proxyFactory.addAdvisor(advisor);
 		}
 		// 设置要代理的类
@@ -474,7 +474,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyConfig
 			proxyFactory.setPreFiltered(true);
 		}
 
-		return proxyFactory.getProxy(this.proxyClassLoader);
+		return proxyFactory.getProxy(this.proxyClassLoader); // 获取代理对象
 	}
 
 	/**

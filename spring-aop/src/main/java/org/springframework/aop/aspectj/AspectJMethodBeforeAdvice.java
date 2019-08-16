@@ -36,7 +36,7 @@ public class AspectJMethodBeforeAdvice extends AbstractAspectJAdvice implements 
 	}
 
 	public void before(Method method, Object[] args, Object target) throws Throwable {
-		invokeAdviceMethod(getJoinPointMatch(), null, null);
+		invokeAdviceMethod(getJoinPointMatch(), null, null); // 调用 通知方法
 	}
 
 	public boolean isBeforeAdvice() {

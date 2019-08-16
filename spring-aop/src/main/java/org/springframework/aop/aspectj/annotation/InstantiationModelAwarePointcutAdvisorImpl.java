@@ -85,7 +85,7 @@ class InstantiationModelAwarePointcutAdvisorImpl
 			this.lazy = true;
 		}
 		else {
-			// A singleton aspect.
+			// A singleton aspect. 创建 Advice. Advisor 是 advice 的持有者
 			this.instantiatedAdvice = instantiateAdvice(this.declaredPointcut);
 			this.pointcut = declaredPointcut;
 			this.lazy = false;
@@ -135,7 +135,7 @@ class InstantiationModelAwarePointcutAdvisorImpl
 		return (this.instantiatedAdvice != null);
 	}
 
-	/**根据注解中的信息初始化对应的增强器*/
+	/** 根据注解中的信息初始化对应的 adivce */
 	private Advice instantiateAdvice(AspectJExpressionPointcut pcut) {
 		return this.atAspectJAdvisorFactory.getAdvice(
 				this.method, pcut, this.aspectInstanceFactory, this.declarationOrder, this.aspectName);

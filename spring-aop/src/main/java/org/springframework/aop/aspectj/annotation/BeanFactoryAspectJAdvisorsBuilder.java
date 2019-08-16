@@ -72,7 +72,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	}
 
 
-	/** 提取Advisor
+	/** 解析 @Aspect 注解
 	 * Look for AspectJ-annotated aspect beans in the current bean factory,
 	 * and return to a list of Spring AOP Advisors representing them.
 	 * <p>Creates a Spring Advisor for each AspectJ advice method.
@@ -87,26 +87,26 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 			if (aspectNames == null) {
 				List<Advisor> advisors = new LinkedList<Advisor>();
 				aspectNames = new LinkedList<String>();
-				String[] beanNames = // 获取所有的beanName
+				String[] beanNames = // 获取所有的 beanName
 						BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Object.class, true, false);
-				for (String beanName : beanNames) {// 循环所有的beanName找出对应的增强方法
-					if (!isEligibleBean(beanName)) {// 不合法的bean则略过， 由子类定义规则， 默认返回true
+				for (String beanName : beanNames) { // 遍历所有的 beanName 找出对应的增强方法
+					if (!isEligibleBean(beanName)) { // 不合法的 bean 则略过, 由子类定义规则, 默认返回 true
 						continue;
 					}
 					// We must be careful not to instantiate beans eagerly as in this
 					// case they would be cached by the Spring container but would not
-					// have been weaved.获取对应的bean的类型
+					// have been weaved.获取对应的 bean 的类型
 					Class beanType = this.beanFactory.getType(beanName);
 					if (beanType == null) {
 						continue;
 					}
-					if (this.advisorFactory.isAspect(beanType)) {// 如果存在Aspect注解
+					if (this.advisorFactory.isAspect(beanType)) { // 若类上存在 Aspect 注解
 						aspectNames.add(beanName);
 						AspectMetadata amd = new AspectMetadata(beanType, beanName);
 						if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
 							MetadataAwareAspectInstanceFactory factory =
 									new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
-							List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);// 解析标记AspectJ注解中的增强方法
+							List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory); // 解析标记 @AspectJ 注解中的增强方法
 							if (this.beanFactory.isSingleton(beanName)) {
 								this.advisorsCache.put(beanName, classAdvisors);
 							}

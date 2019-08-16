@@ -66,9 +66,9 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 	@Override
 	protected Object[] getAdvicesAndAdvisorsForBean(Class beanClass, String beanName, TargetSource targetSource) {
-		List advisors = findEligibleAdvisors(beanClass, beanName);// 获取所有的增强以及寻找所有增强中适用于bean的增强并应用
+		List advisors = findEligibleAdvisors(beanClass, beanName); // 获取所有的增强 以及 寻找所有增强中适用于 bean 的增强 并应用
 		if (advisors.isEmpty()) {
-			return DO_NOT_PROXY;// 如果无法找到对应的增强器便返回 DO_NOT_PROXY
+			return DO_NOT_PROXY; // 如果无法找到对应的增强器便返回 DO_NOT_PROXY
 		}
 		return advisors.toArray();
 	}
@@ -98,7 +98,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @return the List of candidate Advisors
 	 */
 	protected List<Advisor> findCandidateAdvisors() {
-		return this.advisorRetrievalHelper.findAdvisorBeans();
+		return this.advisorRetrievalHelper.findAdvisorBeans(); // 从容器中查找所有 Advisor 类型的 bean
 	}
 
 	/** 挑取出适合的增强器， 也就是满足我们配置的通配符的增强器
