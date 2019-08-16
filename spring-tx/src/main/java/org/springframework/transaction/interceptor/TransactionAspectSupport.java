@@ -243,12 +243,12 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	 * @throws Throwable propagated from the target invocation
 	 */
 	protected Object invokeWithinTransaction(Method method, Class targetClass, final InvocationCallback invocation)
-			throws Throwable {
+			throws Throwable { // 一个大的环绕切面,将事务的创建 与 提交/回滚 包在事务方法的外围
 
 		// If the transaction attribute is null, the method is non-transactional.获取 TransactionAttribute、PlatformTransactionManager、以及连接点方法信息。
 		final TransactionAttribute txAttr = getTransactionAttributeSource().getTransactionAttribute(method, targetClass);
 		final PlatformTransactionManager tm = determineTransactionManager(txAttr);
-		final String joinpointIdentification = methodIdentification(method, targetClass);
+		final String joinpointIdentification = methodIdentification(method, targetClass); // 连接点信息
 
 		if (txAttr == null || !(tm instanceof CallbackPreferringPlatformTransactionManager)) {
 			// Standard transaction demarcation with getTransaction and commit/rollback calls.开启事务
@@ -257,17 +257,17 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			try {
 				// This is an around advice: Invoke the next interceptor in the chain.
 				// This will normally result in a target object being invoked.
-				retVal = invocation.proceedWithInvocation();
+				retVal = invocation.proceedWithInvocation(); // 执行回调,如果没有后续拦截器的话,就进入事务方法了
 			}
 			catch (Throwable ex) {
-				// target invocation exception
+				// target invocation exception 事务发生异常
 				completeTransactionAfterThrowing(txInfo, ex);
 				throw ex;
 			}
 			finally {
-				cleanupTransactionInfo(txInfo);
+				cleanupTransactionInfo(txInfo); // 把上一层事务的 TxInfo重新绑到 ThreadLocal中
 			}
-			commitTransactionAfterReturning(txInfo);
+			commitTransactionAfterReturning(txInfo); // 事务未发生异常
 			return retVal;
 		}
 
@@ -402,7 +402,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			PlatformTransactionManager tm, TransactionAttribute txAttr, final String joinpointIdentification) {
 
 		// If no name specified, apply method identification as transaction name.
-		if (txAttr != null && txAttr.getName() == null) {
+		if (txAttr != null && txAttr.getName() == null) { // 如果事务属性中 name为 null,则创建一个简易委托类,name为连接点方法标识
 			txAttr = new DelegatingTransactionAttribute(txAttr) {
 				@Override
 				public String getName() {
@@ -414,7 +414,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		TransactionStatus status = null;
 		if (txAttr != null) {
 			if (tm != null) {
-				status = tm.getTransaction(txAttr);
+				status = tm.getTransaction(txAttr); // 根据事务属性 判断 是否需要开启事务,并返回状态
 			}
 			else {
 				if (logger.isDebugEnabled()) {
@@ -438,7 +438,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			TransactionAttribute txAttr, String joinpointIdentification, TransactionStatus status) {
 
 		TransactionInfo txInfo = new TransactionInfo(tm, txAttr, joinpointIdentification);
-		if (txAttr != null) {
+		if (txAttr != null) { // 事务方法
 			// We need a transaction for this method
 			if (logger.isTraceEnabled()) {
 				logger.trace("Getting transaction for [" + txInfo.getJoinpointIdentification() + "]");
@@ -446,7 +446,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			// The transaction manager will flag an error if an incompatible tx already exists
 			txInfo.newTransactionStatus(status);
 		}
-		else {
+		else { // 非事务方法
 			// The TransactionInfo.hasTransaction() method will return
 			// false. We created it only to preserve the integrity of
 			// the ThreadLocal stack maintained in this class.
@@ -458,7 +458,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		// We always bind the TransactionInfo to the thread, even if we didn't create
 		// a new transaction here. This guarantees that the TransactionInfo stack
 		// will be managed correctly even if no transaction was created by this aspect.
-		txInfo.bindToThread();
+		txInfo.bindToThread(); // 无论是否创建了 新事务,这里都会把当前的 txInfo对象通过 ThreadLocal变量绑定到当前线程
 		return txInfo;
 	}
 

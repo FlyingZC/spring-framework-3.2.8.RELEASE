@@ -369,7 +369,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				boolean newSynchronization = (getTransactionSynchronization() != SYNCHRONIZATION_NEVER);
 				DefaultTransactionStatus status = newTransactionStatus(
 						definition, transaction, true, newSynchronization, debugEnabled, suspendedResources);
-				doBegin(transaction, definition);// 调用供子类实现的模板方法doBegin来开启事务
+				doBegin(transaction, definition);// 模板方法 doBegin()开启事务
 				prepareSynchronization(status, definition);// 调用 TransactionSynchronizationManager来保存一些事务上下文信息
 				return status;
 			}
@@ -382,7 +382,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				throw err;
 			}
 		}
-		else {
+		else { // 传播行为是 SUPPORTS 或 NOT_SUPPORTED 或 NEVER 的情况,这几种情况对于当前无事务的逻辑都是 直接继续运行
 			// Create "empty" transaction: no actual transaction, but potentially synchronization.
 			boolean newSynchronization = (getTransactionSynchronization() == SYNCHRONIZATION_ALWAYS);
 			return prepareTransactionStatus(definition, null, true, newSynchronization, debugEnabled, null);
@@ -1021,7 +1021,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	// Template methods to be implemented in subclasses
 	//---------------------------------------------------------------------
 
-	/**
+	/** 用于从 TxMgr中拿一个事务对象，事务对象具体什么类型 AbstractPlatformTransactionManager并不关心.如果当前已经有事务的话，返回的对象应该是要包含当前事务信息的
 	 * Return a transaction object for the current transaction state.
 	 * <p>The returned object will usually be specific to the concrete transaction
 	 * manager implementation, carrying corresponding transaction state in a
@@ -1045,7 +1045,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	 */
 	protected abstract Object doGetTransaction() throws TransactionException;
 
-	/**
+	/** 用于判断一个事务对象 是否对应于 一个已经存在的事务.Spring会根据这个方法的返回值来分类讨论事务该如何传播
 	 * Check if the given transaction object indicates an existing transaction
 	 * (that is, a transaction which has already started).
 	 * <p>The result will be evaluated according to the specified propagation
@@ -1084,7 +1084,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		return true;
 	}
 
-	/**
+	/** 开启事务
 	 * Begin a new transaction with semantics according to the given transaction
 	 * definition. Does not have to care about applying the propagation behavior,
 	 * as this has already been handled by this abstract manager.
@@ -1104,7 +1104,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	protected abstract void doBegin(Object transaction, TransactionDefinition definition)
 			throws TransactionException;
 
-	/**
+	/** 将当前事务资源挂起.如 DataSourceTransactionManager,它的资源就是ConnectionHolder.会将 ConnectionHolder与 当前线程 脱离关系 并 取出来
 	 * Suspend the resources of the current transaction.
 	 * Transaction synchronization will already have been suspended.
 	 * <p>The default implementation throws a TransactionSuspensionNotSupportedException,
@@ -1122,7 +1122,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				"Transaction manager [" + getClass().getName() + "] does not support transaction suspension");
 	}
 
-	/**
+	/** 恢复当前事务资源.如 DataSourceTransactionManager,它会将 ConnectionHolder重新绑定到线程上
 	 * Resume the resources of the current transaction.
 	 * Transaction synchronization will be resumed afterwards.
 	 * <p>The default implementation throws a TransactionSuspensionNotSupportedException,
@@ -1185,7 +1185,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	protected void prepareForCommit(DefaultTransactionStatus status) {
 	}
 
-	/**
+	/** 提交
 	 * Perform an actual commit of the given transaction.
 	 * <p>An implementation does not need to check the "new transaction" flag
 	 * or the rollback-only flag; this will already have been handled before.
@@ -1197,7 +1197,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	 */
 	protected abstract void doCommit(DefaultTransactionStatus status) throws TransactionException;
 
-	/**
+	/** 回滚事务
 	 * Perform an actual rollback of the given transaction.
 	 * <p>An implementation does not need to check the "new transaction" flag;
 	 * this will already have been handled before. Usually, a straight rollback
@@ -1208,7 +1208,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	 */
 	protected abstract void doRollback(DefaultTransactionStatus status) throws TransactionException;
 
-	/**
+	/** 事务标记为回滚.DataSourceTransactionManager它的实现是拿出事务对象中的 ConnectionHolder打上回滚标记.这个标记是一种"全局的标记",因为隶属于同一个物理事务都能读到同一个 ConnectionHolder
 	 * Set the given transaction rollback-only. Only called on rollback
 	 * if the current transaction participates in an existing one.
 	 * <p>The default implementation throws an IllegalTransactionStateException,

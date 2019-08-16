@@ -1,4 +1,4 @@
-/*
+/* Spring实现声明式事务的拦截器
  * Copyright 2002-2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -90,8 +90,8 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 		// as well as the method, which may be from an interface.
 		Class<?> targetClass = (invocation.getThis() != null ? AopUtils.getTargetClass(invocation.getThis()) : null);// 获取目标类
 
-		// Adapt to TransactionAspectSupport's invokeWithinTransaction...
-		return invokeWithinTransaction(invocation.getMethod(), targetClass, new InvocationCallback() {
+		// Adapt to TransactionAspectSupport's invokeWithinTransaction...在事务中调用方法
+		return invokeWithinTransaction(invocation.getMethod(), targetClass, new InvocationCallback() {// 传入回调
 			public Object proceedWithInvocation() throws Throwable {
 				return invocation.proceed();
 			}
