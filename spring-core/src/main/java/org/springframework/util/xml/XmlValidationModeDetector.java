@@ -78,7 +78,7 @@ public class XmlValidationModeDetector {
 	private boolean inComment;
 
 
-	/** Spring用来检测验证模式的办法就是判断是否包含DOCTYPE,如果包含就是DTD,否则就是XSD
+	/** Spring 用来检测验证模式的办法,就是判断是否包含 DOCTYPE,如果包含就是 DTD,否则就是 XSD
 	 * Detect the validation mode for the XML document in the supplied {@link InputStream}.
 	 * Note that the supplied {@link InputStream} is closed by this method before returning.
 	 * @param inputStream the InputStream to parse
@@ -97,16 +97,16 @@ public class XmlValidationModeDetector {
 				if (this.inComment || !StringUtils.hasText(content)) {// 如果读取的行是空或者是注释则略过
 					continue;
 				}
-				if (hasDoctype(content)) {
+				if (hasDoctype(content)) { // DOCTYPE
 					isDtdValidated = true;
 					break;
 				}
-				if (hasOpeningTag(content)) {// 读取到<开始符号， 验证模式一定会在开始符号之前
+				if (hasOpeningTag(content)) {// 读取到 < 开始符号,验证模式一定会在开始符号之前
 					// End of meaningful data...
 					break;
 				}
 			}
-			return (isDtdValidated ? VALIDATION_DTD : VALIDATION_XSD);
+			return (isDtdValidated ? VALIDATION_DTD : VALIDATION_XSD); // 判断 DOCTYPE,如果包含就是 DTD,否则就是 XSD
 		}
 		catch (CharConversionException ex) {
 			// Choked on some character encoding...

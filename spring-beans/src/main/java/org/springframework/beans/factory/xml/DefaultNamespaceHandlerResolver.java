@@ -111,7 +111,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	 */
 	public NamespaceHandler resolve(String namespaceUri) {
 		Map<String, Object> handlerMappings = getHandlerMappings();
-		Object handlerOrClassName = handlerMappings.get(namespaceUri);
+		Object handlerOrClassName = handlerMappings.get(namespaceUri); // 获取 namespace handler class
 		if (handlerOrClassName == null) {
 			return null;
 		}
@@ -126,8 +126,8 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 					throw new FatalBeanException("Class [" + className + "] for namespace [" + namespaceUri +
 							"] does not implement the [" + NamespaceHandler.class.getName() + "] interface");
 				}
-				NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass);
-				namespaceHandler.init();
+				NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass); // 实例化 namespaceHandler
+				namespaceHandler.init(); // 调用 namesapceHandler.init(),一般里面会注册各种标签的 parser
 				handlerMappings.put(namespaceUri, namespaceHandler);
 				return namespaceHandler;
 			}
@@ -146,7 +146,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	 * Load the specified NamespaceHandler mappings lazily.
 	 */
 	private Map<String, Object> getHandlerMappings() {
-		if (this.handlerMappings == null) {
+		if (this.handlerMappings == null) { // 第一次获取时会加载 handlerMappings
 			synchronized (this) {
 				if (this.handlerMappings == null) {
 					try {

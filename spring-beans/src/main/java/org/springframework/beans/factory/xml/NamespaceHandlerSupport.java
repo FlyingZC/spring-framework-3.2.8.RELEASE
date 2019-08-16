@@ -70,7 +70,7 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 	 * registered for that {@link Element}.
 	 */
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		return findParserForElement(element, parserContext).parse(element, parserContext);
+		return findParserForElement(element, parserContext).parse(element, parserContext); // 交给具体标签的 parser 进行处理
 	}
 
 	/**
