@@ -1,37 +1,30 @@
-*.java.hsp
-*.sonarj
-*.sw*
-.DS_Store
-.settings
-.springBeans
-bin
-build.sh
-integration-repo
-ivy-cache
-jxl.log
-jmx.log
-derby.log
-spring-test/test-output/
-.gradle
-argfile*
-pom.xml
+# Operating System Files
 
-/build
-buildSrc/build
-/spring-*/build
+*.DS_Store
+Thumbs.db
+*.sw?
+.#*
+*#
+*~
+*.sublime-*
+
+# Build Artifacts
+
+.gradle/
+build/
 target/
+bin/
+dependency-reduced-pom.xml
 
-# Eclipse artifacts, including WTP generated manifests
+# Eclipse Project Files
+
 .classpath
 .project
-spring-*/src/main/java/META-INF/MANIFEST.MF
+.settings/
 
-# IDEA artifacts and output dirs
+# IntelliJ IDEA Files
+
 *.iml
 *.ipr
 *.iws
-out
-test-output
-atlassian-ide-plugin.xml
-*/.idea
-
+*.idea

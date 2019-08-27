@@ -317,7 +317,7 @@ class BeanDefinitionValueResolver {
 				return this.beanFactory.getParentBeanFactory().getBean(refName);
 			}
 			else {
-				Object bean = this.beanFactory.getBean(refName);// 获取依赖的属性 bean
+				Object bean = this.beanFactory.getBean(refName); // 获取依赖的属性 bean
 				this.beanFactory.registerDependentBean(refName, this.beanName);
 				return bean;
 			}

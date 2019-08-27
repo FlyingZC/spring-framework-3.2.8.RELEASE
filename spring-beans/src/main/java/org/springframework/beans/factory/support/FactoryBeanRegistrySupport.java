@@ -139,7 +139,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 				}
 			}
 			else {
-				object = factory.getObject();// 直接调用getObject方法
+				object = factory.getObject(); // 直接调用 factoryBean.getObject() 方法
 			}
 		}
 		catch (FactoryBeanNotInitializedException ex) {
@@ -159,7 +159,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 
 		if (object != null && shouldPostProcess) {
 			try {
-				object = postProcessObjectFromFactoryBean(object, beanName);// 调用ObjectFactory的后处理器
+				object = postProcessObjectFromFactoryBean(object, beanName); // 调用 ObjectFactory 的后处理器
 			}
 			catch (Throwable ex) {
 				throw new BeanCreationException(beanName, "Post-processing of the FactoryBean's object failed", ex);

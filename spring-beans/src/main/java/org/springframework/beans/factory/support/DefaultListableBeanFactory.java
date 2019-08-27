@@ -603,11 +603,11 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
 			beanNames = new ArrayList<String>(this.beanDefinitionNames);
 		}
-		for (String beanName : beanNames) { // 遍历 beanNames,触发所有的非懒加载的 singleton beans 的初始化操作
-			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName); // 合并父 Bean中的配置，即 <bean id="" class="" parent="" /> 配置中的 parent
+		for (String beanName : beanNames) { // 触发所有的非懒加载的 singleton beans 的初始化操作
+			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName); // 合并父 Bean中的配置，即<bean id="" class="" parent="" /> 配置中的 parent
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) { // 非 abstract,单例,非懒加载,进行初始化
 				if (isFactoryBean(beanName)) { // 处理 FactoryBean
-					final FactoryBean<?> factory = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName);
+					final FactoryBean<?> factory = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName); // 获取 FactoryBean,使用 & + beanName
 					boolean isEagerInit;
 					if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
 						isEagerInit = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
@@ -624,7 +624,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 						getBean(beanName);
 					}
 				}
-				else { // 非 FactoryBean
+				else {
 					getBean(beanName); // 对于普通的 Bean,只要调用 getBean(beanName) 这个方法就可以进行初始化了
 				}
 			}
@@ -643,7 +643,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		Assert.notNull(beanDefinition, "BeanDefinition must not be null");
 
 		if (beanDefinition instanceof AbstractBeanDefinition) {
-			try { // 对于 AbstractBeanDefinition 属性中的 methodOverrides 校验,校验 methodOverrides 是否与工厂方法并存或者 methodOverrides 对应的方法根本不存在
+			try {// 注册前的最后一次校验， 这里的校验不同于之前的XML文件校验，主要是对于AbstractBeanDefinition属性中的methodOverrides校验，校验methodOverrides是否与工厂方法并存或者methodOverrides对应的方法根本不存在
 				((AbstractBeanDefinition) beanDefinition).validate();
 			}
 			catch (BeanDefinitionValidationException ex) {
@@ -652,10 +652,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
-		synchronized (this.beanDefinitionMap) { // 因为 beanDefinitionMap 是全局变量,这里定会存在并发访问的情况
+		synchronized (this.beanDefinitionMap) {// 因为beanDefinitionMap是全局变量， 这里定会存在并发访问的情况
 			Object oldBeanDefinition = this.beanDefinitionMap.get(beanName);
-			if (oldBeanDefinition != null) { // 处理注册已经注册的 beanName 情况
-				if (!this.allowBeanDefinitionOverriding) { // 如果对应的 BeanName 已经注册且在配置中配置了 bean 不允许被覆盖,则抛出异常
+			if (oldBeanDefinition != null) {// 处理注册已经注册的beanName情况
+				if (!this.allowBeanDefinitionOverriding) {// 如果对应的BeanName已经注册且在配置中配置了bean不允许被覆盖， 则抛出异常。
 					throw new BeanDefinitionStoreException(beanDefinition.getResourceDescription(), beanName,
 							"Cannot register bean definition [" + beanDefinition + "] for bean '" + beanName +
 							"': There is already [" + oldBeanDefinition + "] bound.");
@@ -668,12 +668,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				}
 			}
 			else {
-				this.beanDefinitionNames.add(beanName); // 记录 beanName
+				this.beanDefinitionNames.add(beanName);// 记录beanName
 				this.frozenBeanDefinitionNames = null;
 			}
-			this.beanDefinitionMap.put(beanName, beanDefinition); // 注册 beanDefinition
+			this.beanDefinitionMap.put(beanName, beanDefinition);// 注册beanDefinition
 		}
-		// 重置所有 beanName 对应的缓存
+		// 重置所有beanName对应的缓存
 		resetBeanDefinition(beanName);
 	}
 
