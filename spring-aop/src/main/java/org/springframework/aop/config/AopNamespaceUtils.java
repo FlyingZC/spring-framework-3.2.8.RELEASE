@@ -69,14 +69,14 @@ public abstract class AopNamespaceUtils {
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
-	/**注册AnnotationAwareAspectJAutoProxyCreator*/
+	/** 注册 AnnotationAwareAspectJAutoProxyCreator */
 	public static void registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 			ParserContext parserContext, Element sourceElement) {
-		// 注册或升级 AutoProxyCreator 定义 beanName 为 org.Springframework.aop.config.internalAutoProxyCreator的BeanDefinition
+		// 注册或升级 AutoProxyCreator 定义 beanName 为 org.Springframework.aop.config.internalAutoProxyCreator 的 BeanDefinition
 		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
-		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);// 对于proxy-target-class以及expose-proxy属性的处理
-		registerComponentIfNecessary(beanDefinition, parserContext);// 注册组件并通知，便于监听器做进一步处理.其中beanDefinition的className为AnnotationAwareAspectJAutoProxyCreator
+		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement); // 对于 proxy-target-class 以及 expose-proxy 属性的处理
+		registerComponentIfNecessary(beanDefinition, parserContext); // 注册组件并通知，便于监听器做进一步处理.其中 beanDefinition 的 className 为 AnnotationAwareAspectJAutoProxyCreator
 	}
 
 	/**
@@ -103,13 +103,13 @@ public abstract class AopNamespaceUtils {
 
 	private static void useClassProxyingIfNecessary(BeanDefinitionRegistry registry, Element sourceElement) {
 		if (sourceElement != null) {
-			boolean proxyTargetClass = Boolean.valueOf(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));// 对于proxy-target-class属性的处理
+			boolean proxyTargetClass = Boolean.valueOf(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE)); // 对于 proxy-target-class 属性的处理
 			if (proxyTargetClass) {
 				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
 			}
-			boolean exposeProxy = Boolean.valueOf(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE));// 对于expose-proxy属性的处理
+			boolean exposeProxy = Boolean.valueOf(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE)); // 对于 expose-proxy 属性的处理
 			if (exposeProxy) {
-				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);// 强制使用的过程其实也是一个属性设置的过程
+				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry); // 强制使用的过程其实也是一个属性设置的过程
 			}
 		}
 	}

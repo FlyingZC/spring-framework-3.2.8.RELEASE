@@ -50,19 +50,19 @@ public class DefaultAopProxyFactory implements AopProxyFactory, Serializable {
 
 
 	public AopProxy createAopProxy(AdvisedSupport config) throws AopConfigException {
-		if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) {// (1)isOptimize方法为true,这表示让 Spring自己去优化而不是用户指定;(2)ProxyConfig的isProxyTargetClass方法为true，这表示配置了proxy-target-class="true";(3)ProxyConfig满足 hasNoUserSuppliedProxyInterfaces()方法执行结果为true，这表示<bean>对象没有实现任何接口或者实现的接口是SpringProxy接口
+		if (config.isOptimize() || config.isProxyTargetClass() || hasNoUserSuppliedProxyInterfaces(config)) { // 1.isOptimize() 方法为 true,表示让 Spring 自己去优化而不是用户指定;2.ProxyConfig.isProxyTargetClass()方法为 true,这表示配置了 proxy-target-class="true"; 3.ProxyConfig 满足 hasNoUserSuppliedProxyInterfaces() 方法执行结果为 true，这表示 <bean> 对象没有实现任何接口或者实现的接口是 SpringProxy 接口
 			Class targetClass = config.getTargetClass();
 			if (targetClass == null) {
 				throw new AopConfigException("TargetSource cannot determine target class: " +
 						"Either an interface or a target is required for proxy creation.");
 			}
 			if (targetClass.isInterface()) {
-				return new JdkDynamicAopProxy(config);// 对接口生成代理使用JDK原生的Proxy
+				return new JdkDynamicAopProxy(config); // 对接口生成代理使用 JDK 原生的 Proxy
 			}
 			return CglibProxyFactory.createCglibProxy(config);
 		}
 		else {
-			return new JdkDynamicAopProxy(config);// 1.默认使用JDK自带的Proxy生成代理
+			return new JdkDynamicAopProxy(config); // 1.默认使用 JDK 自带的 Proxy 生成代理
 		}
 	}
 

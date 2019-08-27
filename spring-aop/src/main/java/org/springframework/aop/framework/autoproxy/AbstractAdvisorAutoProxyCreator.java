@@ -66,7 +66,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 	@Override
 	protected Object[] getAdvicesAndAdvisorsForBean(Class beanClass, String beanName, TargetSource targetSource) {
-		List advisors = findEligibleAdvisors(beanClass, beanName); // 获取所有的增强 以及 寻找所有增强中适用于 bean 的增强 并应用
+		List advisors = findEligibleAdvisors(beanClass, beanName); // 获取所有的增强 以及 寻找所有增强中适用于该 bean 的增强 并应用
 		if (advisors.isEmpty()) {
 			return DO_NOT_PROXY; // 如果无法找到对应的增强器便返回 DO_NOT_PROXY
 		}
@@ -84,8 +84,8 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 * @see #extendAdvisors
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class beanClass, String beanName) {
-		List<Advisor> candidateAdvisors = findCandidateAdvisors();// 解析所有增强器 advisors
-		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);// 根据 advisors中的切点表达式 匹配目标类,返回匹配的 advisors
+		List<Advisor> candidateAdvisors = findCandidateAdvisors(); // 解析所有增强器 advisors
+		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName); // 根据 advisors 中的切点表达式 匹配目标类,返回匹配的 advisors
 		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
 			eligibleAdvisors = sortAdvisors(eligibleAdvisors);// advisors排序
@@ -114,7 +114,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 			List<Advisor> candidateAdvisors, Class beanClass, String beanName) {
 
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
-		try {// 过滤已经得到的advisors
+		try { // 过滤已经得到的 advisors
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		}
 		finally {

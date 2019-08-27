@@ -42,7 +42,7 @@ public class AspectJAfterAdvice extends AbstractAspectJAdvice implements MethodI
 			return mi.proceed();
 		}
 		finally {
-			invokeAdviceMethod(getJoinPointMatch(), null, null);// 激活增强方法
+			invokeAdviceMethod(getJoinPointMatch(), null, null); // 激活增强方法
 		}
 	}
 

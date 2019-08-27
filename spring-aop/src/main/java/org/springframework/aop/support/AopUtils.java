@@ -205,11 +205,11 @@ public abstract class AopUtils {
 	 */
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
-		if (!pc.getClassFilter().matches(targetClass)) {// 1.目标类必须满足匹配规则
+		if (!pc.getClassFilter().matches(targetClass)) { // 1.目标类必须满足匹配规则
 			return false;
 		}
 
-		MethodMatcher methodMatcher = pc.getMethodMatcher();// 方法匹配
+		MethodMatcher methodMatcher = pc.getMethodMatcher(); // 方法匹配
 		IntroductionAwareMethodMatcher introductionAwareMethodMatcher = null;
 		if (methodMatcher instanceof IntroductionAwareMethodMatcher) {
 			introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
@@ -222,7 +222,7 @@ public abstract class AopUtils {
 			for (Method method : methods) {
 				if ((introductionAwareMethodMatcher != null &&
 						introductionAwareMethodMatcher.matches(method, targetClass, hasIntroductions)) ||
-						methodMatcher.matches(method, targetClass)) {// 2.目标类中至少有一个方法匹配
+						methodMatcher.matches(method, targetClass)) { // 2.目标类中至少有一个方法匹配
 					return true;
 				}
 			}
@@ -259,7 +259,7 @@ public abstract class AopUtils {
 		}
 		else if (advisor instanceof PointcutAdvisor) {
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
-			return canApply(pca.getPointcut(), targetClass, hasIntroductions);// 切点表达式 匹配 目标类(中的方法)
+			return canApply(pca.getPointcut(), targetClass, hasIntroductions); // 切点表达式 匹配 目标类(中的方法)
 		}
 		else {
 			// It doesn't have a pointcut so we assume it applies.
@@ -280,7 +280,7 @@ public abstract class AopUtils {
 			return candidateAdvisors;
 		}
 		List<Advisor> eligibleAdvisors = new LinkedList<Advisor>();
-		for (Advisor candidate : candidateAdvisors) {// 首先处理引介增强
+		for (Advisor candidate : candidateAdvisors) { // 首先处理引介增强
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
 				eligibleAdvisors.add(candidate);
 			}
@@ -291,7 +291,7 @@ public abstract class AopUtils {
 				// already processed 引介增强已经处理
 				continue;
 			}
-			if (canApply(candidate, clazz, hasIntroductions)) {// 查看该 advisor能否应用于该 bean
+			if (canApply(candidate, clazz, hasIntroductions)) { // 查看该 advisor 能否应用于该 bean
 				eligibleAdvisors.add(candidate);
 			}
 		}

@@ -136,7 +136,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 		if (aspectNames.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		List<Advisor> advisors = new LinkedList<Advisor>();// 记录在缓存中
+		List<Advisor> advisors = new LinkedList<Advisor>(); // 记录在缓存中
 		for (String aspectName : aspectNames) {
 			List<Advisor> cachedAdvisors = this.advisorsCache.get(aspectName);
 			if (cachedAdvisors != null) {

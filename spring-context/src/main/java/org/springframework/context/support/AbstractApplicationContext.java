@@ -443,7 +443,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	}
 
 	public void refresh() throws BeansException, IllegalStateException {
-		synchronized (this.startupShutdownMonitor) {// refresh操作要保证线程安全
+		synchronized (this.startupShutdownMonitor) { // refresh 操作要保证线程安全
 			// Prepare this context for refreshing.准备刷新的上下文环境
 			prepareRefresh();
 
@@ -534,8 +534,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #getBeanFactory()
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
-		refreshBeanFactory();// 初始化BeanFactory,并进行xml文件读取.并将得到的BeanFactory记录在当前实体的属性中
-		ConfigurableListableBeanFactory beanFactory = getBeanFactory();// 返回当前实体的beanFactory属性
+		refreshBeanFactory(); // 初始化 BeanFactory,并进行 xml 文件读取.并将得到的 BeanFactory 记录在当前实体的属性中
+		ConfigurableListableBeanFactory beanFactory = getBeanFactory(); // 返回当前实体的 beanFactory 属性
 		if (logger.isDebugEnabled()) {
 			logger.debug("Bean factory for " + getDisplayName() + ": " + beanFactory);
 		}
