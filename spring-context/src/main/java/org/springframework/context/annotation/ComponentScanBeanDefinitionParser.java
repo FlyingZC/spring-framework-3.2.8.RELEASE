@@ -77,9 +77,9 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		String[] basePackages = StringUtils.tokenizeToStringArray(element.getAttribute(BASE_PACKAGE_ATTRIBUTE),
-				ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
+				ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS); // base-packages 拆分
 
-		// Actually scan for bean definitions and register them.
+		// Actually scan for bean definitions and register them. 扫描 beanDefinitions 并 注册
 		ClassPathBeanDefinitionScanner scanner = configureScanner(parserContext, element);
 		Set<BeanDefinitionHolder> beanDefinitions = scanner.doScan(basePackages);
 		registerComponents(parserContext.getReaderContext(), beanDefinitions, element);
@@ -91,35 +91,35 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 		XmlReaderContext readerContext = parserContext.getReaderContext();
 
 		boolean useDefaultFilters = true;
-		if (element.hasAttribute(USE_DEFAULT_FILTERS_ATTRIBUTE)) {
+		if (element.hasAttribute(USE_DEFAULT_FILTERS_ATTRIBUTE)) { // 获取 use-default-filters 属性值
 			useDefaultFilters = Boolean.valueOf(element.getAttribute(USE_DEFAULT_FILTERS_ATTRIBUTE));
 		}
 
-		// Delegate bean definition registration to scanner class.
-		ClassPathBeanDefinitionScanner scanner = createScanner(readerContext, useDefaultFilters);
+		// Delegate bean definition registration to scanner class. 将 beanDefinition注册 委托给 Scanner 类
+		ClassPathBeanDefinitionScanner scanner = createScanner(readerContext, useDefaultFilters); // scanner 扫描指定路径的 bean,并注册到容器
 		scanner.setResourceLoader(readerContext.getResourceLoader());
 		scanner.setEnvironment(parserContext.getDelegate().getEnvironment());
 		scanner.setBeanDefinitionDefaults(parserContext.getDelegate().getBeanDefinitionDefaults());
 		scanner.setAutowireCandidatePatterns(parserContext.getDelegate().getAutowireCandidatePatterns());
 
-		if (element.hasAttribute(RESOURCE_PATTERN_ATTRIBUTE)) {
+		if (element.hasAttribute(RESOURCE_PATTERN_ATTRIBUTE)) { // 对资源进行筛选的正则表达式,用于过滤 bean
 			scanner.setResourcePattern(element.getAttribute(RESOURCE_PATTERN_ATTRIBUTE));
 		}
 
 		try {
-			parseBeanNameGenerator(element, scanner);
+			parseBeanNameGenerator(element, scanner); // 生成 beanName
 		}
 		catch (Exception ex) {
 			readerContext.error(ex.getMessage(), readerContext.extractSource(element), ex.getCause());
 		}
 
 		try {
-			parseScope(element, scanner);
+			parseScope(element, scanner); // 解析 scoped-proxy 和 scope-resolver 属性
 		}
 		catch (Exception ex) {
 			readerContext.error(ex.getMessage(), readerContext.extractSource(element), ex.getCause());
 		}
-
+		// 解析配置的类型过滤器属性,包括 include-filter 和 exclude-filter
 		parseTypeFilters(element, scanner, readerContext, parserContext);
 
 		return scanner;
@@ -199,17 +199,17 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 
 		// Parse exclude and include filter elements.
 		ClassLoader classLoader = scanner.getResourceLoader().getClassLoader();
-		NodeList nodeList = element.getChildNodes();
+		NodeList nodeList = element.getChildNodes(); // 获取 component-scan 标签 的 子标签
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node node = nodeList.item(i);
 			if (node.getNodeType() == Node.ELEMENT_NODE) {
 				String localName = parserContext.getDelegate().getLocalName(node);
 				try {
-					if (INCLUDE_FILTER_ELEMENT.equals(localName)) {
+					if (INCLUDE_FILTER_ELEMENT.equals(localName)) { // include-filter 处理
 						TypeFilter typeFilter = createTypeFilter((Element) node, classLoader);
 						scanner.addIncludeFilter(typeFilter);
 					}
-					else if (EXCLUDE_FILTER_ELEMENT.equals(localName)) {
+					else if (EXCLUDE_FILTER_ELEMENT.equals(localName)) { // exclude-filter 处理
 						TypeFilter typeFilter = createTypeFilter((Element) node, classLoader);
 						scanner.addExcludeFilter(typeFilter);
 					}
@@ -223,8 +223,8 @@ public class ComponentScanBeanDefinitionParser implements BeanDefinitionParser {
 
 	@SuppressWarnings("unchecked")
 	protected TypeFilter createTypeFilter(Element element, ClassLoader classLoader) {
-		String filterType = element.getAttribute(FILTER_TYPE_ATTRIBUTE);
-		String expression = element.getAttribute(FILTER_EXPRESSION_ATTRIBUTE);
+		String filterType = element.getAttribute(FILTER_TYPE_ATTRIBUTE); // 获取 type 属性值
+		String expression = element.getAttribute(FILTER_EXPRESSION_ATTRIBUTE); // expression 值
 		try {
 			if ("annotation".equals(filterType)) {
 				return new AnnotationTypeFilter((Class<Annotation>) classLoader.loadClass(expression));

@@ -145,8 +145,8 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 * @return the default bean name (never {@code null})
 	 */
 	protected String buildDefaultBeanName(BeanDefinition definition) {
-		String shortClassName = ClassUtils.getShortName(definition.getBeanClassName());
-		return Introspector.decapitalize(shortClassName);
+		String shortClassName = ClassUtils.getShortName(definition.getBeanClassName()); // 获取类名
+		return Introspector.decapitalize(shortClassName); // 类名转对象名
 	}
 
 }

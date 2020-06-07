@@ -319,7 +319,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 		return new UrlResource(url);
 	}
 
-	/**
+	/** 查找所有 Ant-style pattern 匹配的 resources,包括 jar,zip 还有 file system 里的.
 	 * Find all resources that match the given location pattern via the
 	 * Ant-style PathMatcher. Supports resources in jar files and zip files
 	 * and in the file system.

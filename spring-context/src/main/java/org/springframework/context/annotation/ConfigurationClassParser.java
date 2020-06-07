@@ -181,7 +181,7 @@ class ConfigurationClassParser {
 			processPropertySource(propertySource);
 		}
 
-		// process any @ComponentScan annotations
+		// process any @ComponentScan annotations 获取 @ComponentScan 注解里的所有属性
 		AnnotationAttributes componentScan = MetadataUtils.attributesFor(metadata, ComponentScan.class);
 		if (componentScan != null) {
 			// the config class is annotated with @ComponentScan -> perform the scan immediately

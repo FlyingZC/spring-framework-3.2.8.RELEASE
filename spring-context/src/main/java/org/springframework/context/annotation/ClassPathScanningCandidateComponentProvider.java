@@ -223,9 +223,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 */
 	@SuppressWarnings("unchecked")
 	protected void registerDefaultFilters() {
-		this.includeFilters.add(new AnnotationTypeFilter(Component.class));
+		this.includeFilters.add(new AnnotationTypeFilter(Component.class)); // 支持Component注解
 		ClassLoader cl = ClassPathScanningCandidateComponentProvider.class.getClassLoader();
-		try {
+		try { // 支持 ManagedBean 注解
 			this.includeFilters.add(new AnnotationTypeFilter(
 					((Class<? extends Annotation>) cl.loadClass("javax.annotation.ManagedBean")), false));
 			logger.debug("JSR-250 'javax.annotation.ManagedBean' found and supported for component scanning");
@@ -233,7 +233,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		catch (ClassNotFoundException ex) {
 			// JSR-250 1.1 API (as included in Java EE 6) not available - simply skip.
 		}
-		try {
+		try { // 支持 Named 注解
 			this.includeFilters.add(new AnnotationTypeFilter(
 					((Class<? extends Annotation>) cl.loadClass("javax.inject.Named")), false));
 			logger.debug("JSR-330 'javax.inject.Named' annotation found and supported for component scanning");
@@ -253,11 +253,11 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		Set<BeanDefinition> candidates = new LinkedHashSet<BeanDefinition>();
 		try {
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
-					resolveBasePackage(basePackage) + "/" + this.resourcePattern;
-			Resource[] resources = this.resourcePatternResolver.getResources(packageSearchPath);
+					resolveBasePackage(basePackage) + "/" + this.resourcePattern; // classpath*:com/zc/**/*.class
+			Resource[] resources = this.resourcePatternResolver.getResources(packageSearchPath); // 根据 basePackage 扫描所有符合条件的 .class
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
-			for (Resource resource : resources) {
+			for (Resource resource : resources) { // 遍历符合条件的.class,用asm判断上面是否有 @Component 注解
 				if (traceEnabled) {
 					logger.trace("Scanning " + resource);
 				}
@@ -324,12 +324,12 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * @return whether the class qualifies as a candidate component
 	 */
 	protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
-		for (TypeFilter tf : this.excludeFilters) {
+		for (TypeFilter tf : this.excludeFilters) { // 对 excludeFilters 的过滤处理
 			if (tf.match(metadataReader, this.metadataReaderFactory)) {
 				return false;
 			}
 		}
-		for (TypeFilter tf : this.includeFilters) {
+		for (TypeFilter tf : this.includeFilters) { // 对 includeFilters 的处理,默认里面包含 @Component
 			if (tf.match(metadataReader, this.metadataReaderFactory)) {
 				AnnotationMetadata metadata = metadataReader.getAnnotationMetadata();
 				if (!metadata.isAnnotated(Profile.class.getName())) {
