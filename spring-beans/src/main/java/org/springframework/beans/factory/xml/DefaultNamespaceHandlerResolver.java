@@ -99,7 +99,7 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 	public DefaultNamespaceHandlerResolver(ClassLoader classLoader, String handlerMappingsLocation) {
 		Assert.notNull(handlerMappingsLocation, "Handler mappings location must not be null");
 		this.classLoader = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
-		this.handlerMappingsLocation = handlerMappingsLocation;
+		this.handlerMappingsLocation = handlerMappingsLocation; // META-INF/spring.handlers 文件保存 xml名称空间 和 对应的handler类
 	}
 
 

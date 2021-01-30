@@ -167,7 +167,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		return getSingleton(beanName, true); // 参数 true 设置标识允许早期依赖
 	}
 
-	/** 尝试从 singletonObjects 中取 -> earlySingletonObjects 中取 -> 通过 singletonFactories 获取 singletonFactory 取,并存入 earlySingletonObjects
+	/** 只获取. 尝试从 singletonObjects 中取 -> earlySingletonObjects 中取 -> 通过 singletonFactories 获取 singletonFactory 取,并存入 earlySingletonObjects
 	 * Return the (raw) singleton object registered under the given name.
 	 * <p>Checks already instantiated singletons and also allows for an early
 	 * reference to a currently created singleton (resolving a circular reference).
@@ -190,10 +190,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				}
 			}
 		}
-		return (singletonObject != NULL_OBJECT ? singletonObject : null);
+		return (singletonObject != NULL_OBJECT ? singletonObject : null); // 当 singletonObject 中查不到,且没有正在创建中. 则返回null
 	}
 
-	/** 根据 beanName 向 singletonObjects 缓存中获取 bean,若获取不到则使用 singletonFactory 创建
+	/** 获取不到则创建.根据 beanName 向 singletonObjects 缓存中获取 bean,若获取不到则使用 singletonFactory 创建. 注意和上面的 getSingleton(String beanName, boolean allowEarlyReference) 方法的区别
 	 * Return the (raw) singleton object registered under the given name,
 	 * creating and registering a new one if none registered yet.
 	 * @param beanName the name of the bean
@@ -220,7 +220,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					this.suppressedExceptions = new LinkedHashSet<Exception>();
 				}
 				try {
-					singletonObject = singletonFactory.getObject(); // 初始化 bean. 这个 singletonFactory 参数是通过 第二个方法参数 ObjectFactory<?> singletonFactory 传进来的
+					singletonObject = singletonFactory.getObject(); // 初始化 bean. 这个 singletonFactory 参数是通过 第二个方法参数 ObjectFactory<?> singletonFactory 传进来的,会回调里面的getObject()创建方法
 				}
 				catch (BeanCreationException ex) {
 					if (recordSuppressedExceptions) {

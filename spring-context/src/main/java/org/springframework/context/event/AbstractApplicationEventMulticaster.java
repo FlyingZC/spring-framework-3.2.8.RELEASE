@@ -50,9 +50,9 @@ import org.springframework.util.ObjectUtils;
  * @see SimpleApplicationEventMulticaster
  */
 public abstract class AbstractApplicationEventMulticaster implements ApplicationEventMulticaster, BeanFactoryAware {
-
+	// 对listeners的包装缓存
 	private final ListenerRetriever defaultRetriever = new ListenerRetriever(false);
-
+	// 事件缓存.cacheKey包含 eventType和sourceType
 	private final Map<ListenerCacheKey, ListenerRetriever> retrieverCache =
 			new ConcurrentHashMap<ListenerCacheKey, ListenerRetriever>(64);
 
@@ -119,7 +119,7 @@ public abstract class AbstractApplicationEventMulticaster implements Application
 		}
 	}
 
-	/**
+	/** 获取和传入的 ApplicationEvent 匹配的 ApplicationListener 列表
 	 * Return a Collection of ApplicationListeners matching the given
 	 * event type. Non-matching listeners get excluded early.
 	 * @param event the event to be propagated. Allows for excluding
@@ -128,15 +128,15 @@ public abstract class AbstractApplicationEventMulticaster implements Application
 	 * @see org.springframework.context.ApplicationListener
 	 */
 	protected Collection<ApplicationListener> getApplicationListeners(ApplicationEvent event) {
-		Class<? extends ApplicationEvent> eventType = event.getClass();
+		Class<? extends ApplicationEvent> eventType = event.getClass(); // 获取事件类型Class
 		Object source = event.getSource();
 		Class<?> sourceType = (source != null ? source.getClass() : null);
 		ListenerCacheKey cacheKey = new ListenerCacheKey(eventType, sourceType);
 		ListenerRetriever retriever = this.retrieverCache.get(cacheKey);
-		if (retriever != null) {
+		if (retriever != null) { // 若缓存中有,直接返回缓存中的 listeners
 			return retriever.getApplicationListeners();
 		}
-		else {
+		else { // 缓存中没有
 			retriever = new ListenerRetriever(true);
 			LinkedList<ApplicationListener> allListeners = new LinkedList<ApplicationListener>();
 			Set<ApplicationListener> listeners;
@@ -145,10 +145,10 @@ public abstract class AbstractApplicationEventMulticaster implements Application
 				listeners = new LinkedHashSet<ApplicationListener>(this.defaultRetriever.applicationListeners);
 				listenerBeans = new LinkedHashSet<String>(this.defaultRetriever.applicationListenerBeans);
 			}
-			for (ApplicationListener listener : listeners) {
-				if (supportsEvent(listener, eventType, sourceType)) {
+			for (ApplicationListener listener : listeners) { // 遍历所有listeners
+				if (supportsEvent(listener, eventType, sourceType)) { // 若该listener支持该Event
 					retriever.applicationListeners.add(listener);
-					allListeners.add(listener);
+					allListeners.add(listener); // 添加listener
 				}
 			}
 			if (!listenerBeans.isEmpty()) {
@@ -161,7 +161,7 @@ public abstract class AbstractApplicationEventMulticaster implements Application
 					}
 				}
 			}
-			OrderComparator.sort(allListeners);
+			OrderComparator.sort(allListeners); // listener排序
 			this.retrieverCache.put(cacheKey, retriever);
 			return allListeners;
 		}
@@ -225,9 +225,9 @@ public abstract class AbstractApplicationEventMulticaster implements Application
 	 * <p>An instance of this helper gets cached per event type and source type.
 	 */
 	private class ListenerRetriever {
-
+		// 事件监听器
 		public final Set<ApplicationListener> applicationListeners;
-
+		// listenerBeanNames
 		public final Set<String> applicationListenerBeans;
 
 		private final boolean preFiltered;

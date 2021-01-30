@@ -85,7 +85,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	public void multicastEvent(final ApplicationEvent event) {
 		for (final ApplicationListener listener : getApplicationListeners(event)) {
 			Executor executor = getTaskExecutor();
-			if (executor != null) {
+			if (executor != null) { // 若有executor,则在executor里执行
 				executor.execute(new Runnable() {
 					public void run() {
 						listener.onApplicationEvent(event);
@@ -93,7 +93,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 				});
 			}
 			else {
-				listener.onApplicationEvent(event);
+				listener.onApplicationEvent(event); // 回调 listener.onApplicationEvent() 方法
 			}
 		}
 	}

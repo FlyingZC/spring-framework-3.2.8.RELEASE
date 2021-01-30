@@ -603,9 +603,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			// While this may not be part of the regular factory bootstrap, it does otherwise work fine.
 			beanNames = new ArrayList<String>(this.beanDefinitionNames);
 		}
-		for (String beanName : beanNames) { // 触发所有的非懒加载的 singleton beans 的初始化操作
+		for (String beanName : beanNames) { // 遍历所有beanNames,触发所有的非懒加载的 singleton beans 的初始化操作
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName); // 合并父 Bean中的配置，即<bean id="" class="" parent="" /> 配置中的 parent
-			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) { // 非 abstract,单例,非懒加载,进行初始化
+			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) { // 非 abstract,单例,非懒加载.则进行初始化
 				if (isFactoryBean(beanName)) { // 处理 FactoryBean
 					final FactoryBean<?> factory = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName); // 获取 FactoryBean,使用 & + beanName
 					boolean isEagerInit;
@@ -732,7 +732,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 	}
 
 	@Override
-	public void registerSingleton(String beanName, Object singletonObject) throws IllegalStateException {
+	public void registerSingleton(String beanName, Object singletonObject) throws IllegalStateException { // 传入的 singletonObject 是已经创建好的bean,直接放到对应的缓存里即可
 		super.registerSingleton(beanName, singletonObject);
 		clearByTypeCache();
 	}

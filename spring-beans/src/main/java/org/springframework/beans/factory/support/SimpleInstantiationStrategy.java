@@ -108,7 +108,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 	public Object instantiate(RootBeanDefinition beanDefinition, String beanName, BeanFactory owner,
 			final Constructor<?> ctor, Object[] args) {
 
-		if (beanDefinition.getMethodOverrides().isEmpty()) {
+		if (beanDefinition.getMethodOverrides().isEmpty()) { // 没有MethodOverrides,直接使用反射实例化即可
 			if (System.getSecurityManager() != null) {
 				// use own privileged to change accessibility (when security is on)
 				AccessController.doPrivileged(new PrivilegedAction<Object>() {
@@ -118,10 +118,10 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				});
 			}
-			return BeanUtils.instantiateClass(ctor, args);
+			return BeanUtils.instantiateClass(ctor, args); // 通过 BeanUtils 直接使用构造器对象实例化 bean
 		}
-		else {
-			return instantiateWithMethodInjection(beanDefinition, beanName, owner, ctor, args);
+		else { // 如果配置了 lookup-method、replaced-method 或者 @Lookup 注解等,通过 CGLIB 生成动态代理类
+			return instantiateWithMethodInjection(beanDefinition, beanName, owner, ctor, args); // 生成CGLIB创建的子类对象
 		}
 	}
 

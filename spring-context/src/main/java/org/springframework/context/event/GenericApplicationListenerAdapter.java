@@ -52,14 +52,14 @@ public class GenericApplicationListenerAdapter implements SmartApplicationListen
 	}
 
 	public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-		Class<?> typeArg = GenericTypeResolver.resolveTypeArgument(this.delegate.getClass(), ApplicationListener.class);
+		Class<?> typeArg = GenericTypeResolver.resolveTypeArgument(this.delegate.getClass(), ApplicationListener.class); // 获取 ApplicationListener<T> 里的事件类型T
 		if (typeArg == null || typeArg.equals(ApplicationEvent.class)) {
 			Class<?> targetClass = AopUtils.getTargetClass(this.delegate);
 			if (targetClass != this.delegate.getClass()) {
 				typeArg = GenericTypeResolver.resolveTypeArgument(targetClass, ApplicationListener.class);
 			}
 		}
-		return (typeArg == null || typeArg.isAssignableFrom(eventType));
+		return (typeArg == null || typeArg.isAssignableFrom(eventType)); // listener上指定的事件类型 和给定的 eventType匹配
 	}
 
 	public boolean supportsSourceType(Class<?> sourceType) {
